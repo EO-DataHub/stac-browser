@@ -32,7 +32,8 @@ module.exports = {
     buildTileUrlTemplate: ({href, asset}) => "https://tiles.rdnt.io/tiles/{z}/{x}/{y}@2x?url=" + encodeURIComponent(href),
     stacProxyUrl: null,
     pathPrefix: "/",
-    historyMode: "history",
+    version: "3.1.0",
+//    historyMode: "history",
     cardViewMode: "cards",
     cardViewSort: "asc",
     showKeywordsInItemCards: false,
@@ -49,5 +50,4 @@ module.exports = {
     requestQueryParameters: {},
     socialSharing: ['email', 'bsky', 'mastodon', 'x'],
     preprocessSTAC: null,
-    authConfig: null
 };

@@ -1,3 +1,4 @@
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const yargs = require('yargs/yargs');
 const { hideBin } = require('yargs/helpers');
 const path = require('path');
@@ -32,7 +33,7 @@ const mergedConfig = Object.assign(configFromFile, argv);
 const vueConfig = {
   lintOnSave: process.env.NODE_ENV !== 'production',
   productionSourceMap: !mergedConfig.noSourceMaps,
-  publicPath: mergedConfig.pathPrefix,
+  publicPath: 'http://resource-catalog-browser.s3-website.eu-west-2.amazonaws.com/v' + mergedConfig.version,
   chainWebpack: webpackConfig => {
     webpackConfig.plugin('define').tap(args => {
       args[0].STAC_BROWSER_VERSION = JSON.stringify(pkgFile.version);
@@ -47,7 +48,13 @@ const vueConfig = {
       return args;
     });
   },
+  css: {
+    extract: false
+  },
   configureWebpack: {
+    output: {
+      filename: '[name].bundle.js',
+    },
     resolve: {
       fallback: {
         'fs/promises': false
@@ -56,6 +63,14 @@ const vueConfig = {
     plugins: [
       new NodePolyfillPlugin({
         includeAliases: ['Buffer', 'path']
+      }),
+      new MiniCssExtractPlugin({
+        filename: '[name].css',
+        chunkFilename: '[id].css',
+        insert: function (linkTag) {
+          const scriptTag = document.querySelector('script');
+          scriptTag.parentNode.insertBefore(linkTag, scriptTag);
+        }
       })
     ]
   },
@@ -65,7 +80,7 @@ const vueConfig = {
       fallbackLocale: mergedConfig.fallbackLocale,
       enableInSFC: false
     }
-  }
+  },
 };
 
 module.exports = vueConfig;

@@ -1,4 +1,4 @@
-name: Publish Docker image to AWS ECR
+name: Push to S3 bucket
 
 on:
   push:
@@ -11,9 +11,6 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-*'
     branches:
       - main
-
-env:
-  IMAGE_NAME: eodhp-web-presence
 
 jobs:
   docker:
@@ -58,4 +55,4 @@ jobs:
 
       - name: Sync files to S3 bucket
         run: |
-          aws s3 sync build 's3://resource-catalog-browser/${{ IMAGE_TAG }}' --delete
+          aws s3 sync build s3://resource-catalog-browser/$IMAGE_TAG --delete

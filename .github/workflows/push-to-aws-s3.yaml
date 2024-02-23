@@ -54,6 +54,4 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync files to S3 bucket
-        run: |
-#          aws s3 sync build s3://resource-catalog-browser/$IMAGE_TAG --delete
-          aws s3 sync newdir/ s3://resource-catalog-browser/$IMAGE_TAG
+        run: aws s3 sync newdir/ s3://resource-catalog-browser/$IMAGE_TAG

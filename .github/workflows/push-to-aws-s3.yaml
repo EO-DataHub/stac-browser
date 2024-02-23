@@ -10,7 +10,7 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-*'
     branches:
-      - main
+      - "**"
 
 jobs:
   s3:
@@ -30,7 +30,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Get image tag
-        run: echo IMAGE_TAG=$(if [[ "${GITHUB_REF##refs/tags/}" =~ ^v ]]; then echo ${GITHUB_REF##refs/tags/}; else echo "latest"; fi) >> "$GITHUB_ENV"
+        run: echo IMAGE_TAG=$(if [[ "${GITHUB_REF##refs/tags/}" =~ ^v ]]; then echo ${GITHUB_REF##refs/tags/}; else echo "${GITHUB_REF##refs/heads/}"; fi) >> "$GITHUB_ENV"
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3

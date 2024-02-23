@@ -13,7 +13,7 @@ on:
       - main
 
 jobs:
-  docker:
+  s3:
     runs-on: ubuntu-latest
 
     permissions:
@@ -54,4 +54,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sync files to S3 bucket
-        run: aws s3 cp /dist s3://resource-catalog-browser/$IMAGE_TAG --recursive
+        run: |
+          echo ls
+          aws s3 cp dist s3://resource-catalog-browser/$IMAGE_TAG --recursive

@@ -2,16 +2,16 @@ import { mapState } from "vuex";
 
 export default {
   components: {
-    DatePicker: () => import('vue2-datepicker')
+    DatePicker: () => import("vue2-datepicker"),
   },
   data() {
     return {
       datepickerLang: null,
-      datepickerFormat: 'YYYY-MM-DD'
+      datepickerFormat: "YYYY-MM-DD",
     };
   },
   computed: {
-    ...mapState(['uiLanguage'])
+    ...mapState(["uiLanguage"]),
   },
   watch: {
     uiLanguage: {
@@ -20,15 +20,15 @@ export default {
         if (!locale) {
           return;
         }
-        const options = (await import(`../locales/${locale}/datepicker.js`)).default;
+        const options = (await import(`../locales/${locale}/datepicker.js`))
+          .default;
         if (options.locale instanceof Promise) {
           this.datepickerLang = (await options.locale).default;
-        }
-        else {
+        } else {
           this.datepickerLang = options.locale;
         }
         this.datepickerFormat = options.format;
-      }
-    }
-  }
+      },
+    },
+  },
 };

@@ -8,12 +8,12 @@
 
 <script>
 export default {
-  name: 'ProviderRoles',
+  name: "ProviderRoles",
   props: {
     roles: {
       type: Array,
-      default: null
-    }
+      default: null,
+    },
   },
   methods: {
     displayRole(role) {
@@ -22,8 +22,8 @@ export default {
         return this.$t(key);
       }
       return role;
-    }
-  }
+    },
+  },
 };
 </script>
 

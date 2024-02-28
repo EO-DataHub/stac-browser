@@ -1,20 +1,62 @@
 <template>
   <div class="map-container">
-    <l-map class="map" v-if="show" :class="stac.type" @ready="init" :options="mapOptions">
+    <l-map
+      class="map"
+      v-if="show"
+      :class="stac.type"
+      @ready="init"
+      :options="mapOptions"
+    >
       <l-control-fullscreen />
-      <l-control-zoom :key="`z${ix}`" v-bind="zoomControlTexts" position="topleft" />
-      <l-control-layers v-if="showLayerControl" position="bottomleft" ref="layerControl" />
-      <component
-        v-for="basemap of basemaps" :is="basemap.is" :key="basemap.key"
-        ref="basemaps" layerType="base" v-bind="basemap"
+      <l-control-zoom
+        :key="`z${ix}`"
+        v-bind="zoomControlTexts"
+        position="topleft"
       />
-      <l-tile-layer v-for="xyz of xyzLinks" ref="overlays" :key="xyz.url" layerType="overlay" v-bind="xyz" />
-      <LWMSTileLayer v-for="wms of wmsLinks" ref="overlays" :key="wms.url" layerType="overlay" v-bind="wms" />
-      <l-geo-json v-if="geojson" ref="geojson" :geojson="geojson" :options="{onEachFeature: showPopup}" :optionsStyle="{color: secondaryColor, weight: secondaryWeight}" />
+      <l-control-layers
+        v-if="showLayerControl"
+        position="bottomleft"
+        ref="layerControl"
+      />
+      <component
+        v-for="basemap of basemaps"
+        :is="basemap.is"
+        :key="basemap.key"
+        ref="basemaps"
+        layerType="base"
+        v-bind="basemap"
+      />
+      <l-tile-layer
+        v-for="xyz of xyzLinks"
+        ref="overlays"
+        :key="xyz.url"
+        layerType="overlay"
+        v-bind="xyz"
+      />
+      <LWMSTileLayer
+        v-for="wms of wmsLinks"
+        ref="overlays"
+        :key="wms.url"
+        layerType="overlay"
+        v-bind="wms"
+      />
+      <l-geo-json
+        v-if="geojson"
+        ref="geojson"
+        :geojson="geojson"
+        :options="{ onEachFeature: showPopup }"
+        :optionsStyle="{ color: secondaryColor, weight: secondaryWeight }"
+      />
     </l-map>
     <b-popover
-      v-if="popover && selectedItem" placement="left" triggers="manual" :show="selectedItem !== null"
-      :target="selectedItem.target" boundary="#stac-browser" container="#stac-browser" :key="selectedItem.key"
+      v-if="popover && selectedItem"
+      placement="left"
+      triggers="manual"
+      :show="selectedItem !== null"
+      :target="selectedItem.target"
+      boundary="#stac-browser"
+      container="#stac-browser"
+      :key="selectedItem.key"
     >
       <section class="items">
         <b-card-group columns class="count-1">
@@ -22,77 +64,89 @@
         </b-card-group>
       </section>
       <div class="text-center">
-        <b-button target="_blank" variant="danger" @click="resetSelectedItem">{{ $t('leaflet.close') }}</b-button>
+        <b-button target="_blank" variant="danger" @click="resetSelectedItem">{{
+          $t("leaflet.close")
+        }}</b-button>
       </div>
     </b-popover>
   </div>
 </template>
 
 <script>
-import stacLayer from 'stac-layer';
-import { LMap, LControlZoom, LControlLayers, LGeoJson, LTileLayer, LWMSTileLayer } from 'vue2-leaflet';
-import LControlFullscreen from 'vue2-leaflet-fullscreen';
-import Utils, { geojsonMediaType } from '../utils';
-import './map/leaflet-areaselect';
-import { mapGetters, mapState } from 'vuex';
-import STAC from '../models/stac';
-import { object as formatObject, string as formatString } from '@radiantearth/stac-fields/datatypes';
-import { BPopover } from 'bootstrap-vue';
-import getBasemaps from '../../basemaps.config';
+import stacLayer from "stac-layer";
+import {
+  LMap,
+  LControlZoom,
+  LControlLayers,
+  LGeoJson,
+  LTileLayer,
+  LWMSTileLayer,
+} from "vue2-leaflet";
+import LControlFullscreen from "vue2-leaflet-fullscreen";
+import Utils, { geojsonMediaType } from "../utils";
+import "./map/leaflet-areaselect";
+import { mapGetters, mapState } from "vuex";
+import STAC from "../models/stac";
+import {
+  object as formatObject,
+  string as formatString,
+} from "@radiantearth/stac-fields/datatypes";
+import { BPopover } from "bootstrap-vue";
+import getBasemaps from "../../basemaps.config";
 
 // Fix missing icons: https://vue2-leaflet.netlify.app/quickstart/#marker-icons-are-missing
-import { Icon } from 'leaflet';
+import { Icon } from "leaflet";
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-const LABEL_EXT = 'https://stac-extensions.github.io/label/v1.*/schema.json';
+const LABEL_EXT = "https://stac-extensions.github.io/label/v1.*/schema.json";
 
 export default {
-  name: 'Map',
+  name: "Map",
   components: {
     BPopover,
-    Item: () => import('../components/Item.vue'),
+    Item: () => import("../components/Item.vue"),
     LControlFullscreen,
     LControlLayers,
     LControlZoom,
     LGeoJson,
     LMap,
     LTileLayer,
-    LWMSTileLayer
+    LWMSTileLayer,
   },
   props: {
     stac: {
       type: Object,
-      required: true
+      required: true,
     },
     stacLayerData: {
       type: Object,
-      default: null
+      default: null,
     },
     selectBounds: {
       type: Boolean,
-      default: false
+      default: false,
     },
     scrollWheelZoom: {
       type: Boolean,
-      default: false
+      default: false,
     },
     popover: {
       type: Boolean,
-      default: false
+      default: false,
     },
     fitBoundsOnce: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
-      secondaryColor: '#FF8833',
+      secondaryColor: "#FF8833",
       secondaryWeight: 2,
       show: false,
       map: null,
@@ -101,88 +155,114 @@ export default {
       geojson: null,
       itemPreviewsLayer: null,
       mapOptions: {
-        zoomControl: false
+        zoomControl: false,
       },
       dblClickState: null,
       selectedItem: null,
-      ix: 1
+      ix: 1,
     };
   },
   computed: {
-    ...mapState(['buildTileUrlTemplate', 'crossOriginMedia', 'displayGeoTiffByDefault', 'geoTiffResolution', 'maxPreviewsOnMap', 'uiLanguage', 'useTileLayerAsFallback']),
-    ...mapGetters(['getStac', 'supportsExtension']),
+    ...mapState([
+      "buildTileUrlTemplate",
+      "crossOriginMedia",
+      "displayGeoTiffByDefault",
+      "geoTiffResolution",
+      "maxPreviewsOnMap",
+      "uiLanguage",
+      "useTileLayerAsFallback",
+    ]),
+    ...mapGetters(["getStac", "supportsExtension"]),
     fullscreenOptions() {
       return {
         title: {
-          'false': this.$t('fullscreen.show'),
-          'true': this.$t('fullscreen.exit'),
-        }
+          false: this.$t("fullscreen.show"),
+          true: this.$t("fullscreen.exit"),
+        },
       };
     },
     zoomControlTexts() {
       return {
-        zoomInText: this.$t('leaflet.zoom.in.label'),
-        zoomInTitle: this.$t('leaflet.zoom.in.description'),
-        zoomOutText: this.$t('leaflet.zoom.out.label'),
-        zoomOutTitle: this.$t('leaflet.zoom.out.description')
+        zoomInText: this.$t("leaflet.zoom.in.label"),
+        zoomInTitle: this.$t("leaflet.zoom.in.description"),
+        zoomOutText: this.$t("leaflet.zoom.out.label"),
+        zoomOutTitle: this.$t("leaflet.zoom.out.description"),
       };
     },
     basemaps() {
-      return getBasemaps(this.stac).map(map => {
-        map = Object.assign({
-          key: map.url || map.baseUrl,
-          options: {}
-        }, map);
-        map.options.noWrap = this.selectBounds;
-        return map;
-      }).filter(map => Utils.isObject(map));
+      return getBasemaps(this.stac)
+        .map((map) => {
+          map = Object.assign(
+            {
+              key: map.url || map.baseUrl,
+              options: {},
+            },
+            map
+          );
+          map.options.noWrap = this.selectBounds;
+          return map;
+        })
+        .filter((map) => Utils.isObject(map));
     },
     showLayerControl() {
-      return this.xyzLinks.length > 0 || this.wmsLinks.length > 0 || this.basemaps.length > 1;
+      return (
+        this.xyzLinks.length > 0 ||
+        this.wmsLinks.length > 0 ||
+        this.basemaps.length > 1
+      );
     },
     xyzLinks() {
-      const links = this.getWebMapLinks('xyz');
-      return links.map(link => ({
+      const links = this.getWebMapLinks("xyz");
+      return links.map((link) => ({
         url: link.href,
         name: link.title || Utils.titleForHref(link.href),
         subdomains: link.servers,
-        attribution: link.attribution || this.stac.getMetadata('attribution')
+        attribution: link.attribution || this.stac.getMetadata("attribution"),
       }));
     },
     wmsLinks() {
-      const links = this.getWebMapLinks('wms');
+      const links = this.getWebMapLinks("wms");
       const wmsLinks = [];
-      for(const link of links) {
-        if (!Array.isArray(link['wms:layers'])) {
+      for (const link of links) {
+        if (!Array.isArray(link["wms:layers"])) {
           continue;
         }
-        for(const i in link['wms:layers']) {
-          const layers = link['wms:layers'][i];
+        for (const i in link["wms:layers"]) {
+          const layers = link["wms:layers"][i];
           let styles;
-          if (Array.isArray(link['wms:styles']) && typeof link['wms:styles'][i] === 'string') {
-            styles = link['wms:styles'][i];
+          if (
+            Array.isArray(link["wms:styles"]) &&
+            typeof link["wms:styles"][i] === "string"
+          ) {
+            styles = link["wms:styles"][i];
           }
-          const name = [link.title, layers].filter(x => Boolean(x)).join(' - ');
+          const name = [link.title, layers]
+            .filter((x) => Boolean(x))
+            .join(" - ");
           const props = {
             baseUrl: link.href,
             name,
-            attribution: link.attribution || this.stac.getMetadata('attribution'),
-            version: '1.3.0',
+            attribution:
+              link.attribution || this.stac.getMetadata("attribution"),
+            version: "1.3.0",
             layers,
-            transparent: String(link['wms:transparent'] || false),
-            styles
+            transparent: String(link["wms:transparent"] || false),
+            styles,
           };
-          if (typeof link['type'] === 'string' && link['type'].startsWith('image/')) {
-            props.format = link['type'];
+          if (
+            typeof link["type"] === "string" &&
+            link["type"].startsWith("image/")
+          ) {
+            props.format = link["type"];
           }
-          if (Utils.isObject(link['wms:dimensions'])) {
-            props.options = link['wms:dimensions'];
+          if (Utils.isObject(link["wms:dimensions"])) {
+            props.options = link["wms:dimensions"];
           }
           wmsLinks.push(props);
         }
       }
       return wmsLinks;
-    }
+    },
   },
   watch: {
     uiLanguage() {
@@ -199,7 +279,7 @@ export default {
     },
     showLayerControl() {
       this.updateLayerControl();
-    }
+    },
   },
   created() {
     this.mapOptions.scrollWheelZoom = this.selectBounds || this.scrollWheelZoom;
@@ -222,10 +302,10 @@ export default {
     async init(map) {
       this.map = map;
       if (this.$listeners.viewChanged || this.popover) {
-        this.map.on('viewreset', this.viewChanged);
-        this.map.on('zoom', this.viewChanged);
-        this.map.on('move', this.viewChanged);
-        this.map.on('resize', this.viewChanged);
+        this.map.on("viewreset", this.viewChanged);
+        this.map.on("zoom", this.viewChanged);
+        this.map.on("move", this.viewChanged);
+        this.map.on("resize", this.viewChanged);
       }
 
       await this.showStacLayer();
@@ -246,11 +326,17 @@ export default {
     },
     updateLayerControl() {
       if (this.showLayerControl) {
-        const basemaps = Array.isArray(this.$refs.basemaps) ? this.$refs.basemaps : [];
-        const xyzOverlays = Array.isArray(this.$refs.xyzOverlays) ? this.$refs.xyzOverlays : [];
-        const wmsOverlays = Array.isArray(this.$refs.wmsOverlays) ? this.$refs.wmsOverlays : [];
+        const basemaps = Array.isArray(this.$refs.basemaps)
+          ? this.$refs.basemaps
+          : [];
+        const xyzOverlays = Array.isArray(this.$refs.xyzOverlays)
+          ? this.$refs.xyzOverlays
+          : [];
+        const wmsOverlays = Array.isArray(this.$refs.wmsOverlays)
+          ? this.$refs.wmsOverlays
+          : [];
         const layers = basemaps.concat(xyzOverlays).concat(wmsOverlays);
-        layers.forEach(layer => this.$refs.layerControl.addLayer(layer));
+        layers.forEach((layer) => this.$refs.layerControl.addLayer(layer));
       }
     },
     viewChanged(event) {
@@ -258,7 +344,7 @@ export default {
         this.resetSelectedItem();
       }
 
-      this.$emit('viewChanged', event);
+      this.$emit("viewChanged", event);
     },
     async showStacLayer() {
       let hadLayer = false;
@@ -277,33 +363,39 @@ export default {
         return;
       }
 
-      let getDefaultOptions = (customOptions = {}) => Object.assign({
-        baseUrl: this.stac.getAbsoluteUrl(),
-        resolution: this.geoTiffResolution,
-        useTileLayerAsFallback: this.useTileLayerAsFallback,
-        buildTileUrlTemplate: this.buildTileUrlTemplate,
-        crossOrigin: this.crossOriginMedia,
-        displayGeoTiffByDefault: this.displayGeoTiffByDefault
-      }, customOptions);
+      let getDefaultOptions = (customOptions = {}) =>
+        Object.assign(
+          {
+            baseUrl: this.stac.getAbsoluteUrl(),
+            resolution: this.geoTiffResolution,
+            useTileLayerAsFallback: this.useTileLayerAsFallback,
+            buildTileUrlTemplate: this.buildTileUrlTemplate,
+            crossOrigin: this.crossOriginMedia,
+            displayGeoTiffByDefault: this.displayGeoTiffByDefault,
+          },
+          customOptions
+        );
 
       let options = getDefaultOptions();
-      if (this.stacLayerData && 'href' in this.stacLayerData) {
+      if (this.stacLayerData && "href" in this.stacLayerData) {
         if (this.stac.isItem()) {
           options.bbox = this.stac?.bbox;
-        }
-        else if (this.stac.isCollection()) {
+        } else if (this.stac.isCollection()) {
           options.bbox = this.stac?.extent?.spatial?.bbox[0];
         }
-        
+
         if (this.stacLayerData.type === geojsonMediaType) {
-          this.geojson = await this.$store.dispatch('loadGeoJson', this.stacLayerData);
-          this.$emit('dataChanged', this.stacLayerData);
+          this.geojson = await this.$store.dispatch(
+            "loadGeoJson",
+            this.stacLayerData
+          );
+          this.$emit("dataChanged", this.stacLayerData);
         }
       }
 
       let addItemsPreview = false;
       // Check whether we could add item previews to the map
-      if (this.stac.isCatalogLike() && data.type === 'FeatureCollection') {
+      if (this.stac.isCatalogLike() && data.type === "FeatureCollection") {
         data = this.stac;
         options.fillOpacity = 0;
         addItemsPreview = true;
@@ -313,7 +405,7 @@ export default {
         try {
           this.stacLayer = await stacLayer(data, options);
         } catch (error) {
-          this.$root.$emit('error', error, this.$t('leaflet.stayLayer.error'));
+          this.$root.$emit("error", error, this.$t("leaflet.stayLayer.error"));
         }
 
         // If the map isn't shown any more after loading the STAC data, don't try to add it to the map.
@@ -323,10 +415,12 @@ export default {
         }
 
         if (this.stacLayer.stac) {
-          this.$emit('dataChanged', this.stacLayer.stac);
+          this.$emit("dataChanged", this.stacLayer.stac);
         }
         this.addMapClickEvent(this.stacLayer);
-        this.stacLayer.on("fallback", event => this.$emit('dataChanged', event.stac));
+        this.stacLayer.on("fallback", (event) =>
+          this.$emit("dataChanged", event.stac)
+        );
         this.stacLayer.addTo(this.map);
         if (!this.fitBoundsOnce || !hadLayer) {
           this.fitBounds(this.stacLayer, this.selectBounds);
@@ -339,9 +433,13 @@ export default {
           fillOpacity: 0,
           weight: this.secondaryWeight,
           color: this.secondaryColor,
-          displayPreview: this.stacLayerData.features.length < this.maxPreviewsOnMap
+          displayPreview:
+            this.stacLayerData.features.length < this.maxPreviewsOnMap,
         });
-        this.itemPreviewsLayer = await stacLayer(this.stacLayerData, itemPreviewOptions);
+        this.itemPreviewsLayer = await stacLayer(
+          this.stacLayerData,
+          itemPreviewOptions
+        );
         this.addMapClickEvent(this.itemPreviewsLayer);
         this.itemPreviewsLayer.addTo(this.map);
         this.itemPreviewsLayer.bringToFront();
@@ -351,19 +449,29 @@ export default {
       }
 
       // label extension: Add source imagery and geojson to map
-      if (this.stac.isItem() && this.supportsExtension(LABEL_EXT) && this.stac.properties['label:type'] === 'vector') {
-        let sourceLinks = this.stac.getLinksWithRels(['source']);
+      if (
+        this.stac.isItem() &&
+        this.supportsExtension(LABEL_EXT) &&
+        this.stac.properties["label:type"] === "vector"
+      ) {
+        let sourceLinks = this.stac.getLinksWithRels(["source"]);
 
-        let labelAssets = this.stac.getAssetsWithRoles(['labels']);
+        let labelAssets = this.stac.getAssetsWithRoles(["labels"]);
         if (labelAssets.length > 1) {
-          labelAssets = labelAssets.filter(asset => asset.roles.includes('labels-vector'));
+          labelAssets = labelAssets.filter((asset) =>
+            asset.roles.includes("labels-vector")
+          );
         }
         if (labelAssets.length === 0) {
           if ("vector_labels" in this.stac.assets) {
             labelAssets.push(this.stac.assets.vector_labels);
-          }
-          else {
-            let potentialAssets = Object.values(this.stac.assets).filter(asset => asset.type === geojsonMediaType && asset.rel !== 'item' && !asset.roles);
+          } else {
+            let potentialAssets = Object.values(this.stac.assets).filter(
+              (asset) =>
+                asset.type === geojsonMediaType &&
+                asset.rel !== "item" &&
+                !asset.roles
+            );
             if (potentialAssets.length === 1) {
               labelAssets.push(potentialAssets[0]);
             }
@@ -371,39 +479,40 @@ export default {
         }
 
         if (labelAssets.length > 0 && sourceLinks.length > 0) {
-          this.$store.dispatch('loadGeoJson', labelAssets[0])
-            .then(geojson => this.geojson = geojson)
-            .catch(error => console.error(error));
+          this.$store
+            .dispatch("loadGeoJson", labelAssets[0])
+            .then((geojson) => (this.geojson = geojson))
+            .catch((error) => console.error(error));
 
           const labelSourceLayerOptions = getDefaultOptions({
             fillOpacity: 0,
             weight: 0,
             // Usually these are smaller GeoTiffs, so load them by default
-            displayGeoTiffByDefault: true
+            displayGeoTiffByDefault: true,
           });
-          for(let link of sourceLinks) {
-            this.$store.dispatch('load', {url: link.href})
+          for (let link of sourceLinks) {
+            this.$store
+              .dispatch("load", { url: link.href })
               .then(() => {
                 let sourceStac = this.getStac(link.href, true);
                 if (sourceStac instanceof STAC) {
                   return stacLayer(sourceStac, labelSourceLayerOptions);
-                }
-                else {
+                } else {
                   throw sourceStac;
                 }
               })
-              .then(layer => {
+              .then((layer) => {
                 layer.addTo(this.map);
                 // Bring GeoJSON to front to allow opening the popups
                 this.geojsonToFront();
               })
-              .catch(error => console.error(error));
+              .catch((error) => console.error(error));
           }
         }
       }
     },
     addMapClickEvent(layer) {
-      layer.on('click', event => {
+      layer.on("click", (event) => {
         // Debounce click event, otherwise a dblclick is fired (and fired twice)
         let clicks = event.originalEvent.detail || 1;
         if (clicks === 1) {
@@ -411,8 +520,7 @@ export default {
             this.dblClickState = null;
             this.mapClicked(event.stac, event);
           }, 500);
-        }
-        else if (clicks > 1 && this.dblClickState) {
+        } else if (clicks > 1 && this.dblClickState) {
           window.clearTimeout(this.dblClickState);
           this.dblClickState = null;
         }
@@ -425,9 +533,9 @@ export default {
     },
     fitBounds(layer, noPadding = false) {
       let fitOptions = {
-        padding: noPadding ? [0,0] : [90,90],
+        padding: noPadding ? [0, 0] : [90, 90],
         animate: false,
-        duration: 0
+        duration: 0,
       };
       let bounds = layer.getBounds();
       if (bounds) {
@@ -435,64 +543,70 @@ export default {
       }
     },
     showPopup(feature, layer) {
-      let html = '';
+      let html = "";
       if (feature.id) {
         html += `<h3>${formatString(feature.id)}</h3>`;
       }
-      if (Utils.isObject(feature.properties) && Object.keys(feature.properties).length > 0) {
+      if (
+        Utils.isObject(feature.properties) &&
+        Object.keys(feature.properties).length > 0
+      ) {
         html += formatObject(feature.properties);
       }
       if (html.length === 0) {
-        html += `<p>${this.$t('leaflet.noFeatureProperties')}</p>`;
+        html += `<p>${this.$t("leaflet.noFeatureProperties")}</p>`;
       }
       layer.bindPopup(html);
     },
     addBoundsSelector() {
-      this.areaSelect = L.areaSelect({ // eslint-disable-line 
+      this.areaSelect = L.areaSelect({
+        // eslint-disable-line
         width: 300,
         height: 200,
         minWidth: 20,
         minHeight: 20,
         minHorizontalSpacing: 20,
-        minVerticalSpacing: 20
+        minVerticalSpacing: 20,
       });
       this.areaSelect.addTo(this.map);
       this.areaSelect.on("change", () => this.emitBounds());
       this.emitBounds();
     },
     emitBounds() {
-      this.$emit('bounds', this.areaSelect.getBounds());
+      this.$emit("bounds", this.areaSelect.getBounds());
     },
     resetSelectedItem() {
-        if (this.selectedItem && this.selectedItem.oldStyle) {
-          this.selectedItem.layer.setStyle(this.selectedItem.oldStyle);
-        }
-        this.selectedItem = null;
+      if (this.selectedItem && this.selectedItem.oldStyle) {
+        this.selectedItem.layer.setStyle(this.selectedItem.oldStyle);
+      }
+      this.selectedItem = null;
     },
     mapClicked(stac, event) {
-      if(this.popover) {
+      if (this.popover) {
         this.resetSelectedItem();
-        if (stac.type === 'Feature') {
+        if (stac.type === "Feature") {
           this.selectedItem = {
             item: stac.data,
             target: event.originalEvent.srcElement,
             layer: event.layer,
-            key: event.layer._leaflet_id
+            key: event.layer._leaflet_id,
           };
           if (event.layer) {
             this.selectedItem.oldStyle = Object.assign({}, event.layer.options);
-            event.layer.setStyle(Object.assign({}, event.layer.options, {color: '#dc3545'}));
+            event.layer.setStyle(
+              Object.assign({}, event.layer.options, { color: "#dc3545" })
+            );
           }
         }
       }
 
-      this.$emit('mapClicked', stac, event);
-    }
-  }
+      this.$emit("mapClicked", stac, event);
+    },
+  },
 };
 </script>
 
 <style lang="scss">
-@import '~leaflet/dist/leaflet.css';
-@import '../theme/leaflet-areaselect.scss';
+@import "~leaflet/dist/leaflet.css";
+@import "../theme/leaflet-areaselect.scss";
 </style>

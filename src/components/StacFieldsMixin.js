@@ -1,15 +1,15 @@
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
-export default functions => {
+export default (functions) => {
   let mixin = {
     computed: {
-      ...mapState(['uiLanguage'])
+      ...mapState(["uiLanguage"]),
     },
-    methods: {}
+    methods: {},
   };
-  for(let name in functions) {
+  for (let name in functions) {
     let fn = functions[name];
-    mixin.methods[name] = function() {
+    mixin.methods[name] = function () {
       // We call uiLanguage once so that it's a dependency for the computed property
       // which makes the computed property to re-render when uiLanguage changes.
       this.uiLanguage;

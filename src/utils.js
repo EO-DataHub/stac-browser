@@ -1,31 +1,31 @@
-import URI from 'urijs';
-import removeMd from 'remove-markdown';
+import URI from "urijs";
+import removeMd from "remove-markdown";
 import { stacPagination } from "./rels";
 
-export const commonFileNames = ['catalog', 'collection', 'item'];
+export const commonFileNames = ["catalog", "collection", "item"];
 
 export const geojsonMediaType = "application/geo+json";
 
 export const schemaMediaType = "application/schema+json";
 
 export const stacMediaTypes = [
-  'application/json',
+  "application/json",
   geojsonMediaType,
-  'text/json'
+  "text/json",
 ];
 
 export const browserImageTypes = [
-  'image/gif',
-  'image/jpg',
-  'image/jpeg',
-  'image/apng',
-  'image/png',
-  'image/webp'
+  "image/gif",
+  "image/jpg",
+  "image/jpeg",
+  "image/apng",
+  "image/png",
+  "image/webp",
 ];
 
 export const cogMediaTypes = [
   "image/tiff; application=geotiff; profile=cloud-optimized",
-  "image/vnd.stac.geotiff; cloud-optimized=true"
+  "image/vnd.stac.geotiff; cloud-optimized=true",
 ];
 
 export const geotiffMediaTypes = [
@@ -34,10 +34,7 @@ export const geotiffMediaTypes = [
   "image/vnd.stac.geotiff",
 ].concat(cogMediaTypes);
 
-export const browserProtocols = [
-  'http',
-  'https'
-];
+export const browserProtocols = ["http", "https"];
 
 export const imageMediaTypes = browserImageTypes.concat(geotiffMediaTypes);
 export const mapMediaTypes = imageMediaTypes.concat([geojsonMediaType]);
@@ -50,38 +47,38 @@ export class BrowserError extends Error {
 
 /**
  * General utilities
- * 
+ *
  * @class
  */
 export default class Utils {
-
   /**
    * Checks whether a variable is a real object or not.
-   * 
+   *
    * This is a more strict version of `typeof x === 'object'` as this example would also succeeds for arrays and `null`.
    * This function only returns `true` for real objects and not for arrays, `null` or any other data types.
-   * 
+   *
    * @param {*} obj - A variable to check.
    * @returns {boolean} - `true` is the given variable is an object, `false` otherwise.
    */
   static isObject(obj) {
-    return (typeof obj === 'object' && obj === Object(obj) && !Array.isArray(obj));
+    return (
+      typeof obj === "object" && obj === Object(obj) && !Array.isArray(obj)
+    );
   }
 
   /**
    * Computes the size of an array (number of array elements) or object (number of key-value-pairs).
-   * 
+   *
    * Returns 0 for all other data types.
-   * 
-   * @param {*} obj 
+   *
+   * @param {*} obj
    * @returns {integer}
    */
   static size(obj) {
-    if (typeof obj === 'object' && obj !== null) {
+    if (typeof obj === "object" && obj !== null) {
       if (Array.isArray(obj)) {
         return obj.length;
-      }
-      else {
+      } else {
         return Object.keys(obj).length;
       }
     }
@@ -98,51 +95,60 @@ export default class Utils {
     }
     if (allowEmpty && !type) {
       return true;
-    }
-    else if (typeof type !== 'string') {
+    } else if (typeof type !== "string") {
       return false;
-    }
-    else {
+    } else {
       return types.includes(type.toLowerCase());
     }
   }
 
   /**
    * Checks whether a variable is a string and contains at least one character.
-   * 
+   *
    * @param {*} string - A variable to check.
    * @returns {boolean} - `true` is the given variable is an string with length > 0, `false` otherwise.
    */
   static hasText(string) {
-    return (typeof string === 'string' && string.length > 0);
+    return typeof string === "string" && string.length > 0;
   }
 
-  static shortenTitle(fullStr, strLen, separator = '…') {
+  static shortenTitle(fullStr, strLen, separator = "…") {
     if (fullStr.length <= strLen) {
       return fullStr;
     }
 
     let sepLen = separator.length;
     let charsToShow = strLen - sepLen;
-    let frontChars = Math.ceil(charsToShow/2);
-    let backChars = Math.floor(charsToShow/2);
-    return fullStr.substr(0, frontChars) + 
-           separator + 
-           fullStr.substr(fullStr.length - backChars);
+    let frontChars = Math.ceil(charsToShow / 2);
+    let backChars = Math.floor(charsToShow / 2);
+    return (
+      fullStr.substr(0, frontChars) +
+      separator +
+      fullStr.substr(fullStr.length - backChars)
+    );
   }
 
   static isGdalVfsUri(url) {
-    return typeof url === 'string' && url.startsWith('/vsi') && !url.startsWith('/vsicurl/');
+    return (
+      typeof url === "string" &&
+      url.startsWith("/vsi") &&
+      !url.startsWith("/vsicurl/")
+    );
   }
 
   static toAbsolute(href, baseUrl, stringify = true) {
     return Utils.normalizeUri(href, baseUrl, false, stringify);
   }
 
-  static normalizeUri(href, baseUrl = null, noParams = false, stringify = true) {
+  static normalizeUri(
+    href,
+    baseUrl = null,
+    noParams = false,
+    stringify = true
+  ) {
     // Convert vsicurl URLs to normal URLs
-    if (typeof href === 'string' && href.startsWith('/vsicurl/')) {
-      href = href.replace(/^\/vsicurl\//, '');
+    if (typeof href === "string" && href.startsWith("/vsicurl/")) {
+      href = href.replace(/^\/vsicurl\//, "");
     }
     // Parse URL and make absolute, if required
     let uri = URI(href);
@@ -159,15 +165,34 @@ export default class Utils {
   }
 
   static getLinkWithRel(links, rel) {
-    return Array.isArray(links) ? links.find(link => Utils.isObject(link) && Utils.hasText(link.href) && link.rel === rel) : null;
+    return Array.isArray(links)
+      ? links.find(
+          (link) =>
+            Utils.isObject(link) && Utils.hasText(link.href) && link.rel === rel
+        )
+      : null;
   }
 
   static getLinksWithRels(links, rels) {
-    return Array.isArray(links) ? links.filter(link => Utils.isObject(link) && Utils.hasText(link.href) && rels.includes(link.rel)) : [];
+    return Array.isArray(links)
+      ? links.filter(
+          (link) =>
+            Utils.isObject(link) &&
+            Utils.hasText(link.href) &&
+            rels.includes(link.rel)
+        )
+      : [];
   }
 
   static getLinksWithOtherRels(links, rels) {
-    return Array.isArray(links) ? links.filter(link => Utils.isObject(link) && Utils.hasText(link.href) && !rels.includes(link.rel)) : [];
+    return Array.isArray(links)
+      ? links.filter(
+          (link) =>
+            Utils.isObject(link) &&
+            Utils.hasText(link.href) &&
+            !rels.includes(link.rel)
+        )
+      : [];
   }
 
   static equalUrl(a, b) {
@@ -175,8 +200,8 @@ export default class Utils {
       let uri1 = URI(a);
       let uri2 = URI(b);
       // Ignore trailing slash in URL paths
-      uri1.path(uri1.path().replace(/\/$/, ''));
-      uri2.path(uri2.path().replace(/\/$/, ''));
+      uri1.path(uri1.path().replace(/\/$/, ""));
+      uri2.path(uri2.path().replace(/\/$/, ""));
       return uri1.equals(uri2);
     } catch (error) {
       return false;
@@ -185,13 +210,13 @@ export default class Utils {
 
   static summarizeMd(text, maxLength = null) {
     if (!Utils.hasText(text)) {
-      return '';
+      return "";
     }
     // Best-effort approach to remove some CommonMark (Markdown).
     // Likely not perfect, but seems good enough for most cases.
-    text = removeMd(text).replaceAll(/[\r\n]+/g, ' ');
+    text = removeMd(text).replaceAll(/[\r\n]+/g, " ");
     if (maxLength > 0 && text.length > maxLength) {
-      text = text.substr(0, maxLength) + '…';
+      text = text.substr(0, maxLength) + "…";
     }
     return text;
   }
@@ -205,7 +230,7 @@ export default class Utils {
     if (!isVisible) {
       el.scrollIntoView({
         behavior: "smooth",
-        block: "start"
+        block: "start",
       });
     }
   }
@@ -230,17 +255,17 @@ export default class Utils {
   }
 
   static formatDatetimeQuery(value) {
-    return value.map(dt => {
-      if (dt instanceof Date) {
-        return dt.toISOString();
-      }
-      else if (dt) {
-        return dt;
-      }
-      else {
-        return '..';
-      }
-    }).join('/');
+    return value
+      .map((dt) => {
+        if (dt instanceof Date) {
+          return dt.toISOString();
+        } else if (dt) {
+          return dt;
+        } else {
+          return "..";
+        }
+      })
+      .join("/");
   }
 
   static formatSortbyForPOST(value) {
@@ -248,20 +273,20 @@ export default class Utils {
     // See spec here: https://api.stacspec.org/v1.0.0-rc.1/item-search/#tag/Item-Search/operation/postItemSearch
     // This function converts the property name to the desired format.
     const sortby = {
-      field: '',
-      direction: 'asc'
+      field: "",
+      direction: "asc",
     };
-  
+
     // Check if the value starts with a minus sign ("-")
-    if (value.startsWith('-')) {
+    if (value.startsWith("-")) {
       // sort by descending order
       sortby.field = value.substring(1);
-      sortby.direction = 'desc';
+      sortby.direction = "desc";
     } else {
       //sort by ascending order
       sortby.field = value;
     }
-    
+
     // Put the object in an array
     return [sortby];
   }
@@ -271,7 +296,7 @@ export default class Utils {
     if (Utils.isObject(data)) {
       let pageLinks = Utils.getLinksWithRels(data.links, stacPagination);
       for (let pageLink of pageLinks) {
-        let rel = pageLink.rel === 'previous' ? 'prev' : pageLink.rel;
+        let rel = pageLink.rel === "previous" ? "prev" : pageLink.rel;
         pages[rel] = pageLink;
       }
     }
@@ -279,25 +304,26 @@ export default class Utils {
   }
 
   static addFiltersToLink(link, filters = {}, itemsPerPage = null) {
-    let isEmpty = value => {
-      return (value === null
-      || (typeof value === 'number' && !Number.isFinite(value))
-      || (typeof value === 'string' && value.length === 0)
-      || (typeof value === 'object' && Utils.size(value) === 0));
+    let isEmpty = (value) => {
+      return (
+        value === null ||
+        (typeof value === "number" && !Number.isFinite(value)) ||
+        (typeof value === "string" && value.length === 0) ||
+        (typeof value === "object" && Utils.size(value) === 0)
+      );
     };
 
     if (!Utils.isObject(filters)) {
       filters = {};
-    }
-    else {
+    } else {
       filters = Object.assign({}, filters);
     }
 
-    if (typeof filters.limit !== 'number' && typeof itemsPerPage === 'number') {
+    if (typeof filters.limit !== "number" && typeof itemsPerPage === "number") {
       filters.limit = itemsPerPage;
     }
 
-    if (Utils.hasText(link.method) && link.method.toUpperCase() === 'POST') {
+    if (Utils.hasText(link.method) && link.method.toUpperCase() === "POST") {
       let body = Object.assign({}, link.body);
 
       for (let key in filters) {
@@ -307,13 +333,11 @@ export default class Utils {
           continue;
         }
 
-        if (key === 'sortby') {
+        if (key === "sortby") {
           value = Utils.formatSortbyForPOST(value);
-        }
-        else if (key === 'datetime') {
+        } else if (key === "datetime") {
           value = Utils.formatDatetimeQuery(value);
-        }
-        else if (key === 'filters') {
+        } else if (key === "filters") {
           Object.assign(body, value.toJSON());
           continue;
         }
@@ -321,8 +345,8 @@ export default class Utils {
         body[key] = value;
       }
       return Object.assign({}, link, { body });
-    }
-    else { // GET
+    } else {
+      // GET
       // Construct new link with search params
       let url = URI(link.href);
 
@@ -333,16 +357,13 @@ export default class Utils {
           continue;
         }
 
-        if (key === 'datetime') {
+        if (key === "datetime") {
           value = Utils.formatDatetimeQuery(value);
-        }
-        else if (key === 'bbox') {
-          value = value.join(',');
-        }
-        else if ((key === 'collections' || key === 'ids' || key === 'q')) {
-          value = value.join(',');
-        }
-        else if (key === 'filters') {
+        } else if (key === "bbox") {
+          value = value.join(",");
+        } else if (key === "collections" || key === "ids" || key === "q") {
+          value = value.join(",");
+        } else if (key === "filters") {
           let params = value.toText();
           url.setQuery(params);
           continue;
@@ -358,50 +379,43 @@ export default class Utils {
   static titleForHref(href, preferFileName = false) {
     let uri = URI(href);
     let auth = uri.authority();
-    let file = uri.filename().replace(/^(.{1,})\.\w+$/, '$1');
-    let dir = uri.directory().replace(/^\//, '');
+    let file = uri.filename().replace(/^(.{1,})\.\w+$/, "$1");
+    let dir = uri.directory().replace(/^\//, "");
     if (auth && file && !preferFileName) {
-      let path = uri.path().replace(/^\//, '');
-      if (auth === 'doi.org' && path.startsWith('10.')) {
+      let path = uri.path().replace(/^\//, "");
+      if (auth === "doi.org" && path.startsWith("10.")) {
         return `DOI ${path}`;
-      }
-      else {
+      } else {
         return `${file} (${auth})`;
       }
-    }
-    else if (file && !commonFileNames.includes(file)) {
+    } else if (file && !commonFileNames.includes(file)) {
       return file;
-    }
-    else if (auth) {
+    } else if (auth) {
       return auth;
-    }
-    else if (dir) {
+    } else if (dir) {
       return dir;
-    }
-    else {
+    } else {
       return href;
     }
   }
 
   static canBrowserDisplayImage(img) {
-    if (typeof img.href !== 'string') {
+    if (typeof img.href !== "string") {
       return false;
     }
     let uri = URI(img.href);
     let protocol = uri.protocol().toLowerCase();
     if (protocol && !browserProtocols.includes(protocol)) {
       return false;
-    }
-    else if (browserImageTypes.includes(img.type)) {
+    } else if (browserImageTypes.includes(img.type)) {
       return true;
-    }
-    else if (browserImageTypes.includes('image/' + uri.suffix().toLowerCase())) {
+    } else if (
+      browserImageTypes.includes("image/" + uri.suffix().toLowerCase())
+    ) {
       return true;
-    }
-    else if (img.type) {
+    } else if (img.type) {
       return false;
-    }
-    else {
+    } else {
       return true; // If no img.type is given, try to load it anyway: https://github.com/radiantearth/stac-browser/issues/147
     }
   }
@@ -409,24 +423,23 @@ export default class Utils {
   // Gets the value at path of object.
   // Drop in replacement for lodash.get
   static getValueFromObjectUsingPath(object, path) {
-    if (object === null || typeof object !== 'object') {
+    if (object === null || typeof object !== "object") {
       return;
     }
     object = object[path[0]];
-    if (typeof object !== 'undefined' && path.length > 1) {
+    if (typeof object !== "undefined" && path.length > 1) {
       return this.getValueFromObjectUsingPath(object, path.slice(1));
     }
     return object;
   }
 
   static search(searchterm, target, and = true) {
-    if (typeof searchterm !== 'string' || searchterm.length === 0) {
+    if (typeof searchterm !== "string" || searchterm.length === 0) {
       return false;
     }
     if (Utils.isObject(target)) {
       target = Object.values(target);
-    }
-    else if (typeof target === 'string') {
+    } else if (typeof target === "string") {
       target = [target];
     }
 
@@ -441,14 +454,14 @@ export default class Utils {
 
     // Prepare text to search in
     target = target
-      .filter(s => typeof s === 'string') // Remove non-strings
-      .join(' ') // Merge into a single string
-      .replace(splitChars, ' ') // replace split chars with white spaces
+      .filter((s) => typeof s === "string") // Remove non-strings
+      .join(" ") // Merge into a single string
+      .replace(splitChars, " ") // replace split chars with white spaces
       .toLowerCase(); // Lowercase
 
     // Search with "and" or "or"
-    let fn = and ? 'every' : 'some';
-    return searchterm[fn](term => target.includes(term));
+    let fn = and ? "every" : "some";
+    return searchterm[fn]((term) => target.includes(term));
   }
 
   static createLink(href, rel) {
@@ -456,11 +469,11 @@ export default class Utils {
   }
 
   static supportsExtension(data, pattern) {
-    if (!Utils.isObject(data) || !Array.isArray(data['stac_extensions'])) {
+    if (!Utils.isObject(data) || !Array.isArray(data["stac_extensions"])) {
       return false;
     }
-    let regexp = new RegExp('^' + pattern.replaceAll('*', '[^/]+') + '$');
-    return Boolean(data['stac_extensions'].find(uri => regexp.test(uri)));
+    let regexp = new RegExp("^" + pattern.replaceAll("*", "[^/]+") + "$");
+    return Boolean(data["stac_extensions"].find((uri) => regexp.test(uri)));
   }
 
   /**
@@ -489,5 +502,4 @@ export default class Utils {
 
     return Utils.mergeDeep(target, ...sources);
   }
-
 }

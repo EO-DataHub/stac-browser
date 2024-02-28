@@ -1,20 +1,52 @@
 <template>
-  <b-card no-body class="item-card" :class="{queued: !data, deprecated: isDeprecated, description: hasDescription}" v-b-visible.400="load">
-    <b-card-img-lazy v-if="hasImage" class="thumbnail" offset="200" v-bind="thumbnail" />
+  <b-card
+    no-body
+    class="item-card"
+    :class="{
+      queued: !data,
+      deprecated: isDeprecated,
+      description: hasDescription,
+    }"
+    v-b-visible.400="load"
+  >
+    <b-card-img-lazy
+      v-if="hasImage"
+      class="thumbnail"
+      offset="200"
+      v-bind="thumbnail"
+    />
     <b-card-body>
       <b-card-title>
         <StacLink :data="[data, item]" class="stretched-link" />
       </b-card-title>
-      <b-card-text v-if="fileFormats.length > 0 || hasDescription || isDeprecated" class="intro">
-        <b-badge v-if="isDeprecated" variant="warning" class="mr-1 mt-1 deprecated">{{ $t('deprecated') }}</b-badge>
-        <b-badge v-for="format in fileFormats" :key="format" variant="secondary" class="mr-1 mt-1 fileformat">{{ format | formatMediaType }}</b-badge>
-        <template v-if="hasDescription">{{ data.properties.description | summarize }}</template>
+      <b-card-text
+        v-if="fileFormats.length > 0 || hasDescription || isDeprecated"
+        class="intro"
+      >
+        <b-badge
+          v-if="isDeprecated"
+          variant="warning"
+          class="mr-1 mt-1 deprecated"
+          >{{ $t("deprecated") }}</b-badge
+        >
+        <b-badge
+          v-for="format in fileFormats"
+          :key="format"
+          variant="secondary"
+          class="mr-1 mt-1 fileformat"
+          >{{ format | formatMediaType }}</b-badge
+        >
+        <template v-if="hasDescription">{{
+          data.properties.description | summarize
+        }}</template>
       </b-card-text>
       <b-card-text>
         <small class="text-muted">
           <template v-if="extent">{{ extent | formatTemporalExtent }}</template>
-          <template v-else-if="data && data.properties.datetime">{{ data.properties.datetime | formatTimestamp }}</template>
-          <template v-else>{{ $t('items.noTime') }}</template>
+          <template v-else-if="data && data.properties.datetime">{{
+            data.properties.datetime | formatTimestamp
+          }}</template>
+          <template v-else>{{ $t("items.noTime") }}</template>
         </small>
       </b-card-text>
     </b-card-body>
@@ -22,44 +54,53 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import ThumbnailCardMixin from './ThumbnailCardMixin';
-import StacLink from './StacLink.vue';
-import STAC from '../models/stac';
-import { formatTemporalExtent, formatTimestamp, formatMediaType } from '@radiantearth/stac-fields/formatters';
-import Registry from '@radiantearth/stac-fields/registry';
-import Utils from '../utils';
+import { mapGetters } from "vuex";
+import ThumbnailCardMixin from "./ThumbnailCardMixin";
+import StacLink from "./StacLink.vue";
+import STAC from "../models/stac";
+import {
+  formatTemporalExtent,
+  formatTimestamp,
+  formatMediaType,
+} from "@radiantearth/stac-fields/formatters";
+import Registry from "@radiantearth/stac-fields/registry";
+import Utils from "../utils";
 
-Registry.addDependency('content-type', require('content-type'));
+Registry.addDependency("content-type", require("content-type"));
 
 export default {
-  name: 'Item',
+  name: "Item",
   components: {
-    StacLink
+    StacLink,
   },
   filters: {
-    summarize: text => Utils.summarizeMd(text, 150),
-    formatMediaType: value => formatMediaType(value, null, {shorten: true}),
+    summarize: (text) => Utils.summarizeMd(text, 150),
+    formatMediaType: (value) => formatMediaType(value, null, { shorten: true }),
     formatTemporalExtent,
-    formatTimestamp
+    formatTimestamp,
   },
-  mixins: [
-    ThumbnailCardMixin
-  ],
+  mixins: [ThumbnailCardMixin],
   props: {
     item: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
-    ...mapGetters(['getStac']),
+    ...mapGetters(["getStac"]),
     data() {
       return this.getStac(this.item);
     },
     extent() {
-      if (this.data && (this.data.properties.start_datetime || this.data.properties.end_datetime)) {
-        return [this.data.properties.start_datetime, this.data.properties.end_datetime];
+      if (
+        this.data &&
+        (this.data.properties.start_datetime ||
+          this.data.properties.end_datetime)
+      ) {
+        return [
+          this.data.properties.start_datetime,
+          this.data.properties.end_datetime,
+        ];
       }
       return null;
     },
@@ -70,20 +111,25 @@ export default {
       return [];
     },
     isDeprecated() {
-      return this.data instanceof STAC && Boolean(this.data.properties.deprecated);
+      return (
+        this.data instanceof STAC && Boolean(this.data.properties.deprecated)
+      );
     },
     hasDescription() {
-      return this.data instanceof STAC && Utils.hasText(this.data.properties.description);
-    }
+      return (
+        this.data instanceof STAC &&
+        Utils.hasText(this.data.properties.description)
+      );
+    },
   },
   methods: {
     load(visible) {
       if (this.item instanceof STAC) {
         return;
       }
-      this.$store.commit(visible ? 'queue' : 'unqueue', this.item.href);
-    }
-  }
+      this.$store.commit(visible ? "queue" : "unqueue", this.item.href);
+    },
+  },
 };
 </script>
 

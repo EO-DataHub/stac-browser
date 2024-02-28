@@ -1,35 +1,35 @@
 <template>
   <section v-if="collection" class="parent-collection card-list mb-4">
-    <h2>{{ $tc('stacCollection') }}</h2>
+    <h2>{{ $tc("stacCollection") }}</h2>
     <Catalog :catalog="collection" :showThumbnail="showThumbnail" />
   </section>
 </template>
 
 <script>
-import Catalog from './Catalog.vue';
-import { mapGetters } from 'vuex';
-import Utils from '../utils';
+import Catalog from "./Catalog.vue";
+import { mapGetters } from "vuex";
+import Utils from "../utils";
 
 export default {
   name: "CollectionLink",
   components: {
-    Catalog
+    Catalog,
   },
   props: {
     link: {
       type: Object,
-      required: true
+      required: true,
     },
     showThumbnail: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
-    ...mapGetters(['getStac']),
+    ...mapGetters(["getStac"]),
     collection() {
       return this.getStac(this.link);
-    }
+    },
   },
   watch: {
     link: {
@@ -38,8 +38,8 @@ export default {
         if (Utils.isObject(newLink)) {
           this.$store.dispatch("load", { url: newLink.href });
         }
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>

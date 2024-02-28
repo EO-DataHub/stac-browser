@@ -1,275 +1,161 @@
 {
   "$comment": "Defines a JSON Schema for the config file. Note that JS functions are specified as type 'null' with format 'function'.",
-  "type": [
-    "object"
-  ],
+  "type": ["object"],
   "properties": {
     "catalogUrl": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": ["string", "null"],
       "format": "uri"
     },
     "catalogTitle": {
-      "type": [
-        "string"
-      ]
+      "type": ["string"]
     },
     "allowExternalAccess": {
-      "type": [
-        "boolean"
-      ]
+      "type": ["boolean"]
     },
     "allowedDomains": {
-      "type": [
-        "array"
-      ],
+      "type": ["array"],
       "items": {
-        "type": [
-          "string"
-        ]
+        "type": ["string"]
       }
     },
     "detectLocaleFromBrowser": {
-      "type": [
-        "boolean"
-      ]
+      "type": ["boolean"]
     },
     "storeLocale": {
-      "type": [
-        "boolean"
-      ]
+      "type": ["boolean"]
     },
     "locale": {
-      "type": [
-        "string"
-      ]
+      "type": ["string"]
     },
     "fallbackLocale": {
-      "type": [
-        "string"
-      ]
+      "type": ["string"]
     },
     "supportedLocales": {
-      "type": [
-        "array"
-      ],
+      "type": ["array"],
       "items": {
-        "type": [
-          "string"
-        ]
+        "type": ["string"]
       }
     },
     "apiCatalogPriority": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "enum": [
-        "collections",
-        "childs",
-        null
-      ]
+      "type": ["string", "null"],
+      "enum": ["collections", "childs", null]
     },
     "useTileLayerAsFallback": {
-      "type": [
-        "boolean"
-      ]
+      "type": ["boolean"]
     },
     "displayGeoTiffByDefault": {
-      "type": [
-        "boolean"
-      ]
+      "type": ["boolean"]
     },
     "buildTileUrlTemplate": {
-      "type": [
-        "null"
-      ],
+      "type": ["null"],
       "format": "function",
       "noCLI": true,
       "noEnv": true
     },
     "stacProxyUrl": {
-      "type": [
-        "array",
-        "null"
-      ],
+      "type": ["array", "null"],
       "prefixItems": [
         {
-          "type": [
-            "string"
-          ],
+          "type": ["string"],
           "format": "uri-reference"
         },
         {
-          "type": [
-            "string"
-          ],
+          "type": ["string"],
           "format": "uri"
         }
       ],
       "items": false
     },
     "pathPrefix": {
-      "type": [
-        "string"
-      ],
+      "type": ["string"],
       "buildOnly": true
     },
     "historyMode": {
-      "type": [
-        "string"
-      ],
-      "enum": [
-        "history",
-        "hash"
-      ],
+      "type": ["string"],
+      "enum": ["history", "hash"],
       "buildOnly": true
     },
     "cardViewMode": {
-      "type": [
-        "string"
-      ],
-      "enum": [
-        "list",
-        "cards"
-      ]
+      "type": ["string"],
+      "enum": ["list", "cards"]
     },
     "cardViewSort": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "enum": [
-        "asc",
-        "desc",
-        null
-      ]
+      "type": ["string", "null"],
+      "enum": ["asc", "desc", null]
     },
     "showThumbnailsAsAssets": {
-      "type": [
-        "boolean"
-      ]
+      "type": ["boolean"]
     },
     "stacLint": {
-      "type": [
-        "boolean"
-      ]
+      "type": ["boolean"]
     },
     "geoTiffResolution": {
-      "type": [
-        "integer"
-      ],
+      "type": ["integer"],
       "minimum": 1
     },
     "redirectLegacyUrls": {
-      "type": [
-        "boolean"
-      ]
+      "type": ["boolean"]
     },
     "itemsPerPage": {
-      "type": [
-        "integer"
-      ],
+      "type": ["integer"],
       "minimum": 1
     },
     "defaultThumbnailSize": {
-      "type": [
-        "array",
-        "null"
-      ],
+      "type": ["array", "null"],
       "minItems": 2,
       "maxItems": 2,
       "items": {
-        "type": [
-          "number"
-        ]
+        "type": ["number"]
       }
     },
     "maxPreviewsOnMap": {
-      "type": [
-        "integer"
-      ],
+      "type": ["integer"],
       "minimum": 1
     },
     "crossOriginMedia": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "enum": [
-        "anonymous",
-        "use-credentials",
-        "",
-        null
-      ]
+      "type": ["string", "null"],
+      "enum": ["anonymous", "use-credentials", "", null]
     },
     "requestHeaders": {
-      "type": [
-        "object"
-      ],
+      "type": ["object"],
       "noCLI": true,
       "noEnv": false
     },
     "requestQueryParameters": {
-      "type": [
-        "object"
-      ],
+      "type": ["object"],
       "noCLI": true,
       "noEnv": true
     },
     "preprocessSTAC": {
-      "type": [
-        "null"
-      ],
+      "type": ["null"],
       "format": "function",
       "noCLI": true,
       "noEnv": true
     },
     "authConfig": {
-      "type": [
-        "object"
-      ],
+      "type": ["object"],
       "properties": {
         "type": {
-          "type": [
-            "null",
-            "string"
-          ],
-          "enum": [
-            "query",
-            "header"
-          ]
+          "type": ["null", "string"],
+          "enum": ["query", "header"]
         },
         "key": {
-          "type": [
-            "string"
-          ]
+          "type": ["string"]
         },
         "formatter": {
           "oneOf": [
             {
-              "type": [
-                "null"
-              ],
+              "type": ["null"],
               "format": "function"
             },
             {
-              "type": [
-                "string"
-              ],
-              "enum": [
-                "Bearer"
-              ]
+              "type": ["string"],
+              "enum": ["Bearer"]
             }
           ]
         },
         "description": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
       "noCLI": true,

@@ -6,45 +6,44 @@
 
 <script>
 export default {
-  name: 'Loading',
+  name: "Loading",
   props: {
     fill: {
       type: Boolean,
-      default: false
+      default: false,
     },
     stretch: {
       type: Boolean,
-      default: false
+      default: false,
     },
     small: {
       type: Boolean,
-      default: false
+      default: false,
     },
     top: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     classes() {
-      let classes = ['loading'];
+      let classes = ["loading"];
       if (this.fill) {
-        classes.push('loading-fill');
-      }
-      else if (this.stretch) {
-        classes.push('loading-stretch');
+        classes.push("loading-fill");
+      } else if (this.stretch) {
+        classes.push("loading-stretch");
       }
       if (this.top) {
-        classes.push('top');
+        classes.push("top");
       }
       return classes;
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
-@import '../theme/variables.scss';
+@import "../theme/variables.scss";
 
 .loading {
   text-align: center;
@@ -60,7 +59,7 @@ export default {
   &.loading-fill {
     z-index: 2000;
     position: absolute;
-    background-color: rgba(255,255,255, 0.75);
+    background-color: rgba(255, 255, 255, 0.75);
     width: 100%;
     height: 100%;
     top: 0;

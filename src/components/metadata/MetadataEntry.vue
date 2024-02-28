@@ -13,25 +13,24 @@
 </template>
 
 <script>
-import EntryMixin from './EntryMixin';
-import Utils from '../../utils';
+import EntryMixin from "./EntryMixin";
+import Utils from "../../utils";
 
-const FORCE_TABLE = [
-  'languages'
-];
+const FORCE_TABLE = ["languages"];
 
 export default {
   name: "MetadataEntry",
   components: {
-    MetadataTable: () => import('./MetadataTable.vue')
+    MetadataTable: () => import("./MetadataTable.vue"),
   },
-  mixins: [
-    EntryMixin
-  ],
+  mixins: [EntryMixin],
   computed: {
     showTable() {
-      return FORCE_TABLE.includes(this.field) || this.itemOrder.length > 0 && Utils.size(this.value) >= 3;
-    }
-  }
+      return (
+        FORCE_TABLE.includes(this.field) ||
+        (this.itemOrder.length > 0 && Utils.size(this.value) >= 3)
+      );
+    },
+  },
 };
 </script>

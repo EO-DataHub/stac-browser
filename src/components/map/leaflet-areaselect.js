@@ -25,8 +25,11 @@ L.AreaSelect = L.Class.extend({
 
   addTo: function (map) {
     this.map = map;
-    if (this._container) { this.map._controlContainer.appendChild(this._container); }
-    else { this._createElements(); }
+    if (this._container) {
+      this.map._controlContainer.appendChild(this._container);
+    } else {
+      this._createElements();
+    }
     this.map.on("moveend", this._onMapChange, this);
     this.map.on("zoomend", this._onMapChange, this);
     this.map.on("resize", this._onMapResize, this);
@@ -89,7 +92,9 @@ L.AreaSelect = L.Class.extend({
   },
 
   setDimensions: function (dimensions) {
-    if (!dimensions) { return; }
+    if (!dimensions) {
+      return;
+    }
 
     this._height = parseInt(dimensions.height) || this._height;
     this._width = parseInt(dimensions.width) || this._width;
@@ -98,7 +103,9 @@ L.AreaSelect = L.Class.extend({
   },
 
   _createElements: function () {
-    if (this._container) { return; }
+    if (this._container) {
+      return;
+    }
 
     this._container = L.DomUtil.create(
       "div",
@@ -232,7 +239,7 @@ L.AreaSelect = L.Class.extend({
     var topBottomWidth = size.x;
     var topBottomHeight = Math.round((size.y - this._height) / 2);
     var leftRightWidth = Math.round((size.x - this._width) / 2);
-    var leftRightHeight = size.y - (topBottomHeight * 2);
+    var leftRightHeight = size.y - topBottomHeight * 2;
 
     function setDimensions(element, dimension) {
       element.style.width = dimension.width + "px";
@@ -247,25 +254,25 @@ L.AreaSelect = L.Class.extend({
       width: topBottomWidth,
       height: topBottomHeight,
       top: 0,
-      left: 0
+      left: 0,
     });
     setDimensions(this._bottomShade, {
       width: topBottomWidth,
       height: topBottomHeight,
       top: size.y - topBottomHeight,
-      left: 0
+      left: 0,
     });
     setDimensions(this._leftShade, {
       width: leftRightWidth,
       height: leftRightHeight,
       top: topBottomHeight,
-      left: 0
+      left: 0,
     });
     setDimensions(this._rightShade, {
       width: leftRightWidth,
       height: leftRightHeight,
       top: topBottomHeight,
-      left: size.x - leftRightWidth
+      left: size.x - leftRightWidth,
     });
 
     setDimensions(this._nwHandle, {

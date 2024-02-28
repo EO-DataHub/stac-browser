@@ -4,35 +4,45 @@
       <FullscreenButton :element="() => $refs.previews" />
     </div>
     <div class="content">
-      <a v-for="thumbnail in thumbnails" :key="thumbnail.href" :href="thumbnail.href" target="_blank" download>
-        <img class="thumbnail" :src="thumbnail.href" :crossorigin="crossOriginMedia">
+      <a
+        v-for="thumbnail in thumbnails"
+        :key="thumbnail.href"
+        :href="thumbnail.href"
+        target="_blank"
+        download
+      >
+        <img
+          class="thumbnail"
+          :src="thumbnail.href"
+          :crossorigin="crossOriginMedia"
+        />
       </a>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
-  name: 'Thumbnails',
+  name: "Thumbnails",
   components: {
-    FullscreenButton: () => import('./FullscreenButton.vue')
+    FullscreenButton: () => import("./FullscreenButton.vue"),
   },
   props: {
     thumbnails: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
-    ...mapState(['crossOriginMedia'])
-  }
+    ...mapState(["crossOriginMedia"]),
+  },
 };
 </script>
 
 <style lang="scss">
-@import '../theme/variables.scss';
+@import "../theme/variables.scss";
 
 #stac-browser {
   .previews {

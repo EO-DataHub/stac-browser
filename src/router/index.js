@@ -1,4 +1,4 @@
-import Browse from '../views/Browse.vue';
+import Browse from "../views/Browse.vue";
 
 function getRoutes(config) {
   let routes = [];
@@ -8,11 +8,11 @@ function getRoutes(config) {
       path: "/external/(.*)",
       name: "browseExternal",
       component: Browse,
-      props: route => {
+      props: (route) => {
         return {
-          path: `/external/${route.params.pathMatch}`
+          path: `/external/${route.params.pathMatch}`,
         };
-      }
+      },
     });
   }
 
@@ -20,24 +20,23 @@ function getRoutes(config) {
     routes.push({
       path: "/",
       name: "select",
-      component: () => import("../views/SelectDataSource.vue")
+      component: () => import("../views/SelectDataSource.vue"),
     });
     routes.push({
       path: "/search/external/(.*)",
       name: "search",
       component: () => import("../views/Search.vue"),
-      props: route => {
+      props: (route) => {
         return {
-          loadParent: `/external/${route.params.pathMatch}`
+          loadParent: `/external/${route.params.pathMatch}`,
         };
-      }
+      },
     });
-  }
-  else {
+  } else {
     routes.push({
       path: "/search",
       name: "search",
-      component: () => import("../views/Search.vue")
+      component: () => import("../views/Search.vue"),
     });
   }
 
@@ -45,11 +44,11 @@ function getRoutes(config) {
     path: "/(.*)",
     name: "browse",
     component: Browse,
-    props: route => {
+    props: (route) => {
       return {
-        path: route.params.pathMatch
+        path: route.params.pathMatch,
       };
-    }
+    },
   });
 
   return routes;

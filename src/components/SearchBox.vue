@@ -1,41 +1,45 @@
 <template>
   <div class="vue-component search-box">
     <span class="icon">🔎</span>
-    <b-form-input type="search" v-model.trim="searchTerm" :placeholder="placeholder || $t('search.placeholder')" />
+    <b-form-input
+      type="search"
+      v-model.trim="searchTerm"
+      :placeholder="placeholder || $t('search.placeholder')"
+    />
   </div>
 </template>
 
 <script>
-import { BFormInput } from 'bootstrap-vue';
+import { BFormInput } from "bootstrap-vue";
 
 export default {
-  name: 'SearchBox',
+  name: "SearchBox",
   components: {
-    BFormInput
+    BFormInput,
   },
   props: {
     value: {
       type: String,
-      default: ''
+      default: "",
     },
     placeholder: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
-      searchTerm: this.value
+      searchTerm: this.value,
     };
   },
   watch: {
     searchTerm(newValue) {
       if (newValue.length < this.minLength) {
-        newValue = '';
+        newValue = "";
       }
-      this.$emit('input', newValue);
-    }
-  }
+      this.$emit("input", newValue);
+    },
+  },
 };
 </script>
 
@@ -43,7 +47,8 @@ export default {
 #stac-browser .search-box {
   position: relative;
 
-  input, .icon {
+  input,
+  .icon {
     height: 1.5em;
     font-size: 1em;
     margin: 0;

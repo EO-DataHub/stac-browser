@@ -18,7 +18,7 @@ If your catalog uses absolute file locations, you can use the [`stacProxyUrl`](o
 
 ## Using STAC Browser somewhere else
 
-If you are using a hosted version of STAC Browser, such as the [STAC Browser Demo by Radiant Earth](https://radiantearth.github.io/stac-browser/),  and your STAC files use relative URIs, you can run a local webserver. One possibility is to use the Node package described above. Another is to use this Python 3 script:
+If you are using a hosted version of STAC Browser, such as the [STAC Browser Demo by Radiant Earth](https://radiantearth.github.io/stac-browser/), and your STAC files use relative URIs, you can run a local webserver. One possibility is to use the Node package described above. Another is to use this Python 3 script:
 
 ```python
 #!/usr/bin/env python3
@@ -42,7 +42,7 @@ If the above options don't work for you, you can run a fully-featured implementa
 
 - STAC Browser running locally,
 - a local webserver that serves your files to STAC Browser, and
-- a local tile server that can serve web map tiles of images in your item assets. 
+- a local tile server that can serve web map tiles of images in your item assets.
 
 `stactools-browse` requires Docker to run.
 

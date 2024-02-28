@@ -1,16 +1,40 @@
 <template>
   <b-card no-body :class="classes" v-b-visible.400="load" :img-right="isList">
-    <b-card-img-lazy v-if="hasImage" class="thumbnail" offset="200" v-bind="thumbnail" />
+    <b-card-img-lazy
+      v-if="hasImage"
+      class="thumbnail"
+      offset="200"
+      v-bind="thumbnail"
+    />
     <b-card-body>
       <b-card-title>
         <StacLink :data="[data, catalog]" class="stretched-link" />
       </b-card-title>
-      <b-card-text v-if="data && (fileFormats.length > 0 || data.description || data.deprecated)" class="intro">
-        <b-badge v-if="data.deprecated" variant="warning" class="mr-1 mt-1 deprecated">{{ $t('deprecated') }}</b-badge>
-        <b-badge v-for="format in fileFormats" :key="format" variant="secondary" class="mr-1 mt-1 fileformat">{{ format | formatMediaType }}</b-badge>
+      <b-card-text
+        v-if="
+          data &&
+          (fileFormats.length > 0 || data.description || data.deprecated)
+        "
+        class="intro"
+      >
+        <b-badge
+          v-if="data.deprecated"
+          variant="warning"
+          class="mr-1 mt-1 deprecated"
+          >{{ $t("deprecated") }}</b-badge
+        >
+        <b-badge
+          v-for="format in fileFormats"
+          :key="format"
+          variant="secondary"
+          class="mr-1 mt-1 fileformat"
+          >{{ format | formatMediaType }}</b-badge
+        >
         {{ data.description | summarize }}
       </b-card-text>
-      <b-card-text v-if="temporalExtent" class="datetime"><small v-html="temporalExtent" /></b-card-text>
+      <b-card-text v-if="temporalExtent" class="datetime"
+        ><small v-html="temporalExtent"
+      /></b-card-text>
     </b-card-body>
     <b-card-footer>
       <slot name="footer" :data="data" />
@@ -19,48 +43,48 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import StacFieldsMixin from './StacFieldsMixin';
-import ThumbnailCardMixin from './ThumbnailCardMixin';
-import StacLink from './StacLink.vue';
-import STAC from '../models/stac';
-import { formatMediaType, formatTemporalExtent } from '@radiantearth/stac-fields/formatters';
-import Utils from '../utils';
+import { mapGetters } from "vuex";
+import StacFieldsMixin from "./StacFieldsMixin";
+import ThumbnailCardMixin from "./ThumbnailCardMixin";
+import StacLink from "./StacLink.vue";
+import STAC from "../models/stac";
+import {
+  formatMediaType,
+  formatTemporalExtent,
+} from "@radiantearth/stac-fields/formatters";
+import Utils from "../utils";
 
 export default {
-  name: 'Catalog',
+  name: "Catalog",
   components: {
-    StacLink
+    StacLink,
   },
   filters: {
-    summarize: text => Utils.summarizeMd(text, 300),
-    formatMediaType: value => formatMediaType(value, null, {shorten: true})
+    summarize: (text) => Utils.summarizeMd(text, 300),
+    formatMediaType: (value) => formatMediaType(value, null, { shorten: true }),
   },
-  mixins: [
-    ThumbnailCardMixin,
-    StacFieldsMixin({ formatTemporalExtent })
-  ],
+  mixins: [ThumbnailCardMixin, StacFieldsMixin({ formatTemporalExtent })],
   props: {
     catalog: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
-    ...mapGetters(['getStac']),
+    ...mapGetters(["getStac"]),
     classes() {
-      let classes = ['catalog-card'];
+      let classes = ["catalog-card"];
       if (!this.data) {
-        classes.push('queued');
+        classes.push("queued");
       }
       if (this.data && this.data.deprecated) {
-        classes.push('deprecated');
+        classes.push("deprecated");
       }
       if (this.hasImage) {
-        classes.push('has-thumbnail');
+        classes.push("has-thumbnail");
       }
       if (this.temporalExtent) {
-        classes.push('has-extent');
+        classes.push("has-extent");
       }
       return classes;
     },
@@ -68,10 +92,19 @@ export default {
       return this.getStac(this.catalog);
     },
     temporalExtent() {
-      if (this.data?.isCollection() && this.data.extent?.temporal?.interval.length > 0) {
+      if (
+        this.data?.isCollection() &&
+        this.data.extent?.temporal?.interval.length > 0
+      ) {
         let extent = this.data.extent.temporal.interval[0];
-        if (Array.isArray(extent) && (typeof extent[0] === 'string' || typeof extent[1] === 'string')) {
-          return this.formatTemporalExtent(this.data.extent.temporal.interval[0], true);
+        if (
+          Array.isArray(extent) &&
+          (typeof extent[0] === "string" || typeof extent[1] === "string")
+        ) {
+          return this.formatTemporalExtent(
+            this.data.extent.temporal.interval[0],
+            true
+          );
         }
       }
       return null;
@@ -81,22 +114,22 @@ export default {
         return this.data.getFileFormats();
       }
       return [];
-    }
+    },
   },
   methods: {
     load(visible) {
       if (this.catalog instanceof STAC) {
         return;
       }
-      this.$store.commit(visible ? 'queue' : 'unqueue', this.catalog.href);
-    }
-  }
+      this.$store.commit(visible ? "queue" : "unqueue", this.catalog.href);
+    },
+  },
 };
 </script>
 
 <style lang="scss">
-@import '~bootstrap/scss/mixins';
-@import '../theme/variables.scss';
+@import "~bootstrap/scss/mixins";
+@import "../theme/variables.scss";
 
 #stac-browser {
   .catalog-card {
@@ -108,7 +141,8 @@ export default {
       }
     }
 
-    .card-body, .card-footer {
+    .card-body,
+    .card-footer {
       position: relative;
     }
     .card-footer:empty {

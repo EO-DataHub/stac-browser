@@ -1,8 +1,8 @@
-import Utils from '../../utils';
+import Utils from "../../utils";
 export default Utils.mergeDeep(
   {
-    fields: require('./fields.json'),
+    fields: require("./fields.json"),
   },
-  require('./texts.json'),
-  require('./custom.json')
+  require("./texts.json"),
+  require("./custom.json")
 );

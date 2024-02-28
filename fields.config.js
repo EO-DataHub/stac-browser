@@ -1,4 +1,4 @@
-import { Registry } from '@radiantearth/stac-fields';
+import { Registry } from "@radiantearth/stac-fields";
 
 // Please consult https://github.com/radiantearth/stac-browser/blob/main/README.md#additional-metadata-fields for details.
 

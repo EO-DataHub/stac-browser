@@ -13,8 +13,15 @@
       <b-button v-else size="sm" variant="light" :to="to">
         <b-icon-file-earmark-richtext />
       </b-button>
-      
-      <b-button size="sm" variant="light" :class="{path: onPath || active}" :disabled="!to && !active" :to="to" @click="onClick">
+
+      <b-button
+        size="sm"
+        variant="light"
+        :class="{ path: onPath || active }"
+        :disabled="!to && !active"
+        :to="to"
+        @click="onClick"
+      >
         {{ title }}
       </b-button>
 
@@ -25,13 +32,26 @@
         <ul v-else-if="childs.length === 0" class="tree">
           <li>
             <b-button size="sm" variant="light" disabled>
-              {{ $t('tree.noChildren') }}
+              {{ $t("tree.noChildren") }}
             </b-button>
           </li>
         </ul>
         <template v-else>
-          <Tree v-for="(child, i) in shownChilds" :key="i" :item="child" :parent="stac" :path="path" />
-          <b-button class="show-more" v-if="hasMore" variant="light" @click="showMore" v-b-visible.300="showMore">{{ $t('showMore') }}</b-button>
+          <Tree
+            v-for="(child, i) in shownChilds"
+            :key="i"
+            :item="child"
+            :parent="stac"
+            :path="path"
+          />
+          <b-button
+            class="show-more"
+            v-if="hasMore"
+            variant="light"
+            @click="showMore"
+            v-b-visible.300="showMore"
+            >{{ $t("showMore") }}</b-button
+          >
         </template>
       </template>
     </li>
@@ -39,44 +59,49 @@
 </template>
 
 <script>
-import { BIconFileEarmarkRichtext, BIconFolderMinus, BIconFolderPlus, BIconThreeDots } from "bootstrap-vue";
-import { mapGetters, mapState } from 'vuex';
-import Utils from '../utils';
-import STAC from '../models/stac';
+import {
+  BIconFileEarmarkRichtext,
+  BIconFolderMinus,
+  BIconFolderPlus,
+  BIconThreeDots,
+} from "bootstrap-vue";
+import { mapGetters, mapState } from "vuex";
+import Utils from "../utils";
+import STAC from "../models/stac";
 
 export default {
-  name: 'Tree',
+  name: "Tree",
   components: {
     BIconFileEarmarkRichtext,
     BIconFolderMinus,
     BIconFolderPlus,
-    BIconThreeDots
+    BIconThreeDots,
   },
   props: {
     item: {
       type: Object,
-      required: true
+      required: true,
     },
     parent: {
       type: Object,
-      default: null
+      default: null,
     },
     path: {
       type: Array,
-      default: () => ([])
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
       expanded: false,
       loading: false,
       chunk: 1,
-      childs: []
+      childs: [],
     };
   },
   computed: {
-    ...mapState(['data', 'apiCatalogPriority']),
-    ...mapGetters(['getStac']),
+    ...mapState(["data", "apiCatalogPriority"]),
+    ...mapGetters(["getStac"]),
     onClick() {
       if (!this.to && this.mayHaveChildren) {
         return this.toggle;
@@ -86,17 +111,14 @@ export default {
     stac() {
       if (this.pagination) {
         return null;
-      }
-      else if (this.item instanceof STAC) {
+      } else if (this.item instanceof STAC) {
         let stac = this.getStac(this.item.getAbsoluteUrl());
         if (!this.loading && stac) {
           return stac;
-        }
-        else {
+        } else {
           return this.item;
         }
-      }
-      else {
+      } else {
         return this.getStac(this.link);
       }
     },
@@ -104,16 +126,16 @@ export default {
       if (this.pagination) {
         if (this.parent) {
           return this.parent.getAbsoluteUrl();
-        }
-        else {
+        } else {
           return null;
         }
-      }
-      else if (Utils.isObject(this.item) && typeof this.item.href === 'string') {
+      } else if (
+        Utils.isObject(this.item) &&
+        typeof this.item.href === "string"
+      ) {
         if (this.parent) {
           return Utils.toAbsolute(this.item.href, this.parent.getAbsoluteUrl());
-        }
-        else {
+        } else {
           return this.item.href;
         }
       }
@@ -122,9 +144,8 @@ export default {
     mayHaveChildren() {
       if (this.item instanceof STAC) {
         return this.item.isCatalogLike();
-      }
-      else if (this.link) {
-        return this.item.rel !== 'item';
+      } else if (this.link) {
+        return this.item.rel !== "item";
       }
       return false;
     },
@@ -133,21 +154,23 @@ export default {
         return null;
       }
       if (this.pagination) {
-        if (this.parent && (!this.data || this.parent.getAbsoluteUrl() !== this.data.getAbsoluteUrl())) {
+        if (
+          this.parent &&
+          (!this.data ||
+            this.parent.getAbsoluteUrl() !== this.data.getAbsoluteUrl())
+        ) {
           return this.parent.getBrowserPath();
-        }
-        else {
+        } else {
           return null;
         }
-      }
-      else if (this.stac instanceof STAC) {
+      } else if (this.stac instanceof STAC) {
         return this.stac.getBrowserPath();
       }
       return null;
     },
     title() {
       if (this.pagination) {
-        return this.$t('tree.moreCollectionPagesAvailable');
+        return this.$t("tree.moreCollectionPagesAvailable");
       }
       return STAC.getDisplayTitle([this.item, this.stac]);
     },
@@ -167,8 +190,8 @@ export default {
       return this.stac && this.stac === this.data;
     },
     pagination() {
-      return ['next', 'prev', 'previous'].includes(this.item.rel);
-    }
+      return ["next", "prev", "previous"].includes(this.item.rel);
+    },
   },
   watch: {
     onPath: {
@@ -177,20 +200,20 @@ export default {
         if (this.onPath) {
           this.expanded = true;
         }
-      }
+      },
     },
     stac: {
       immediate: true,
       handler(newStac, oldStac) {
         if (newStac instanceof STAC) {
-          newStac.setApiDataListener('tree', () => this.updateChilds());
+          newStac.setApiDataListener("tree", () => this.updateChilds());
         }
         if (oldStac instanceof STAC) {
-          oldStac.setApiDataListener('tree');
+          oldStac.setApiDataListener("tree");
         }
         this.updateChilds();
-      }
-    }
+      },
+    },
   },
   created() {
     if (!this.parent) {
@@ -201,8 +224,7 @@ export default {
     updateChilds() {
       if (this.stac instanceof STAC) {
         this.childs = this.stac.getChildren(this.apiCatalogPriority);
-      }
-      else {
+      } else {
         this.childs = [];
       }
     },
@@ -211,19 +233,22 @@ export default {
     },
     load(visible) {
       if (!this.stac && this.link && !this.pagination) {
-        this.$store.commit(visible ? 'queue' : 'unqueue', this.link);
+        this.$store.commit(visible ? "queue" : "unqueue", this.link);
       }
     },
     async toggle() {
       this.expanded = !this.expanded;
       if (this.expanded && !this.pagination) {
         this.loading = true;
-        let url = this.item instanceof STAC ? this.item.getAbsoluteUrl() : this.item.href;
+        let url =
+          this.item instanceof STAC
+            ? this.item.getAbsoluteUrl()
+            : this.item.href;
         await this.$store.dispatch("load", { url, loadApi: true });
         this.loading = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

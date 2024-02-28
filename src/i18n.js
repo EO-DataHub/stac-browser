@@ -1,26 +1,28 @@
-import Vue from 'vue';
-import VueI18n from 'vue-i18n';
-import CONFIG from './config';
-import {default as Fields} from '@radiantearth/stac-fields/I18N';
-import Utils from './utils';
+import Vue from "vue";
+import VueI18n from "vue-i18n";
+import CONFIG from "./config";
+import { default as Fields } from "@radiantearth/stac-fields/I18N";
+import Utils from "./utils";
 
 Vue.use(VueI18n);
 
-export const API_LANGUAGE_CONFORMANCE = ['https://api.stacspec.org/v1.*/language'];
+export const API_LANGUAGE_CONFORMANCE = [
+  "https://api.stacspec.org/v1.*/language",
+];
 
 const LOCALE_CONFIG = {};
 
 function loadLocaleConfig() {
   // Load locale config
-  for(let locale of CONFIG.supportedLocales) {
+  for (let locale of CONFIG.supportedLocales) {
     LOCALE_CONFIG[locale] = require(`./locales/${locale}/config.json`);
   }
   const messages = {};
   // Add language names all other languages
-  for(let locale in LOCALE_CONFIG) {
-      messages[locale] = {
-        languages: LOCALE_CONFIG
-      };
+  for (let locale in LOCALE_CONFIG) {
+    messages[locale] = {
+      languages: LOCALE_CONFIG,
+    };
   }
   return messages;
 }
@@ -28,14 +30,14 @@ function loadLocaleConfig() {
 const i18n = new VueI18n({
   locale: CONFIG.locale,
   fallbackLocale: CONFIG.fallbackLocale,
-  messages: loadLocaleConfig()
+  messages: loadLocaleConfig(),
 });
 export default i18n;
 
 export function loadDefaultMessages() {
   return Promise.all([
     loadMessages(CONFIG.locale),
-    loadMessages(CONFIG.fallbackLocale)
+    loadMessages(CONFIG.fallbackLocale),
   ]);
 }
 
@@ -50,7 +52,7 @@ export async function loadMessages(locale) {
 }
 
 export function translateFields(value, vars = null) {
-  if (typeof value !== 'string' || value.length === 0) {
+  if (typeof value !== "string" || value.length === 0) {
     return value;
   }
   let key = `fields.${value}`;

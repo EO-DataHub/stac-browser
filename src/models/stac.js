@@ -1,12 +1,11 @@
 import Utils, { geojsonMediaType } from "../utils";
-import Migrate from '@radiantearth/stac-migrate';
-import { getBest } from '../locale-id';
+import Migrate from "@radiantearth/stac-migrate";
+import { getBest } from "../locale-id";
 
 let stacObjCounter = 0;
 
 // STAC Entity
 class STAC {
-
   constructor(data, url, path, migrate = true) {
     this._id = stacObjCounter++;
     this._url = url;
@@ -16,22 +15,21 @@ class STAC {
     this._apiChildren = {
       list: [],
       prev: false,
-      next: false
+      next: false,
     };
 
     if (migrate) {
       // Uncomment this line if the old checksum: fields should be converted
       // This is usually not needed so it's not enabled by default to shrink the bundle size
       // Migrate.enableMultihash(require('multihashes'));
-      if (data.type === 'FeatureCollection') {
-        data.features = data.features.map(item => Migrate.item(item, false));
-      }
-      else {
+      if (data.type === "FeatureCollection") {
+        data.features = data.features.map((item) => Migrate.item(item, false));
+      } else {
         data = Migrate.stac(data, false);
       }
     }
     for (let key in data) {
-      if (typeof this[key] === 'undefined') {
+      if (typeof this[key] === "undefined") {
         this[key] = data[key];
       }
     }
@@ -46,11 +44,11 @@ class STAC {
   }
 
   isItem() {
-    return this.type === 'Feature';
+    return this.type === "Feature";
   }
 
   isCatalog() {
-    return this.type === 'Catalog';
+    return this.type === "Catalog";
   }
 
   isCatalogLike() {
@@ -58,11 +56,11 @@ class STAC {
   }
 
   isCollection() {
-    return this.type === 'Collection';
+    return this.type === "Collection";
   }
 
   isItemCollection() {
-    return this.type === 'FeatureCollection';
+    return this.type === "FeatureCollection";
   }
 
   hasApiData() {
@@ -70,10 +68,9 @@ class STAC {
   }
 
   setApiDataListener(id, listener = null) {
-    if (typeof listener === 'function') {
+    if (typeof listener === "function") {
       this._apiChildrenListeners[id] = listener;
-    }
-    else {
+    } else {
       delete this._apiChildrenListeners[id];
     }
   }
@@ -105,8 +102,13 @@ class STAC {
       assets = assets.concat(Object.values(this.item_assets));
     }
     return assets
-      .filter(asset => Array.isArray(asset.roles) && asset.roles.includes('data') && typeof asset.type === 'string') // Look for data files
-      .map(asset => asset.type) // Array shall only contain media types
+      .filter(
+        (asset) =>
+          Array.isArray(asset.roles) &&
+          asset.roles.includes("data") &&
+          typeof asset.type === "string"
+      ) // Look for data files
+      .map((asset) => asset.type) // Array shall only contain media types
       .filter((v, i, a) => a.indexOf(v) === i); // Unique values
   }
 
@@ -115,8 +117,8 @@ class STAC {
       return [];
     }
 
-    let showCollections = !priority || priority === 'collections';
-    let showChilds = !priority || priority === 'childs';
+    let showCollections = !priority || priority === "collections";
+    let showChilds = !priority || priority === "childs";
 
     let children = [];
     if (showCollections && this._apiChildren.prev) {
@@ -126,7 +128,9 @@ class STAC {
       children = this._apiChildren.list.slice(0);
     }
     if (showChilds) {
-      children = STAC.addMissingChildren(children, this).concat(this.getLinksWithRels(['item']));
+      children = STAC.addMissingChildren(children, this).concat(
+        this.getLinksWithRels(["item"])
+      );
     }
     if (showCollections && this._apiChildren.next) {
       children.push(this._apiChildren.next);
@@ -135,11 +139,13 @@ class STAC {
   }
 
   static addMissingChildren(catalogs, stac) {
-    let links = stac.getStacLinksWithRel('child').filter(link => {
+    let links = stac.getStacLinksWithRel("child").filter((link) => {
       // Don't add links that are already in collections: https://github.com/radiantearth/stac-browser/issues/103
       // ToDo: The runtime of this can probably be improved
       let absoluteUrl = Utils.toAbsolute(link.href, stac.getAbsoluteUrl());
-      return !catalogs.find(collection => collection.getAbsoluteUrl() === absoluteUrl);
+      return !catalogs.find(
+        (collection) => collection.getAbsoluteUrl() === absoluteUrl
+      );
     });
     // place the children first to avoid conflicts with the paginated collections
     // where the children are always at the end and can never be reached due to infinite scrolling
@@ -149,27 +155,33 @@ class STAC {
   getSearchLink() {
     // The search link MUST be 'application/geo+json' as otherwise it's likely not STAC
     // See https://github.com/opengeospatial/ogcapi-features/issues/832
-    let links = Utils.getLinksWithRels(this.links, ['search'])
-      .filter(link => Utils.isMediaType(link.type, geojsonMediaType))
-      .map(link => Object.assign({}, link, {href: Utils.toAbsolute(link.href, this._url)}));
+    let links = Utils.getLinksWithRels(this.links, ["search"])
+      .filter((link) => Utils.isMediaType(link.type, geojsonMediaType))
+      .map((link) =>
+        Object.assign({}, link, {
+          href: Utils.toAbsolute(link.href, this._url),
+        })
+      );
     // Prefer POST if present
-    let post = links.find(link => Utils.hasText(link.method) && link.method.toUpperCase() === 'POST');
+    let post = links.find(
+      (link) =>
+        Utils.hasText(link.method) && link.method.toUpperCase() === "POST"
+    );
     return post || links[0] || null;
   }
 
   getApiCollectionsLink() {
-    return this.getStacLinkWithRel('data');
+    return this.getStacLinkWithRel("data");
   }
 
   getApiItemsLink() {
-    return this.getStacLinkWithRel('items');
+    return this.getStacLinkWithRel("items");
   }
 
   getMetadata(field) {
     if (this.isItem()) {
       return this.properties[field];
-    }
-    else if (this.isCatalogLike()) {
+    } else if (this.isCatalogLike()) {
       return this[field];
     }
     return null;
@@ -184,32 +196,32 @@ class STAC {
   }
 
   getLocaleLink(locale, fallbackLocale = null) {
-    let links = this.getStacLinksWithRel('alternate')
-      .filter(link => Utils.hasText(link.hreflang));
-    
+    let links = this.getStacLinksWithRel("alternate").filter((link) =>
+      Utils.hasText(link.hreflang)
+    );
+
     let available;
     if (Array.isArray(this.languages)) {
-      available = this.languages.map(l => l.code);
+      available = this.languages.map((l) => l.code);
+    } else {
+      available = links.map((link) => link.hreflang);
     }
-    else {
-      available = links.map(link => link.hreflang);
-    }
-    
+
     let best = getBest(available, locale, fallbackLocale);
-    return links.find(link => link.hreflang === best) || null;
+    return links.find((link) => link.hreflang === best) || null;
   }
 
   getStacLinksWithRel(rel, allowEmpty = true) {
-    return Utils.getLinksWithRels(this.links, [rel])
-      .filter(link => Utils.isStacMediaType(link.type, allowEmpty));
+    return Utils.getLinksWithRels(this.links, [rel]).filter((link) =>
+      Utils.isStacMediaType(link.type, allowEmpty)
+    );
   }
 
   getStacLinkWithRel(rel, allowEmpty = true) {
     const links = this.getStacLinksWithRel(rel, allowEmpty);
     if (links.length > 0) {
       return links[0];
-    }
-    else {
+    } else {
       return null;
     }
   }
@@ -231,7 +243,12 @@ class STAC {
     if (Utils.isObject(this.assets)) {
       for (let key in this.assets) {
         let asset = this.assets[key];
-        if (Utils.isObject(asset) && typeof asset.href === 'string' && Array.isArray(asset.roles) && asset.roles.find(role => roles.includes(role))) {
+        if (
+          Utils.isObject(asset) &&
+          typeof asset.href === "string" &&
+          Array.isArray(asset.roles) &&
+          asset.roles.find((role) => roles.includes(role))
+        ) {
           matches.push(asset);
         }
       }
@@ -243,8 +260,8 @@ class STAC {
     if (!Array.isArray(sources)) {
       sources = [sources];
     }
-    let stac = sources.find(o => o instanceof STAC);
-    let link = sources.find(o => Utils.isObject(o) && !(o instanceof STAC));
+    let stac = sources.find((o) => o instanceof STAC);
+    let link = sources.find((o) => Utils.isObject(o) && !(o instanceof STAC));
     // Get title from STAC item/catalog/collection
     if (stac && Utils.hasText(stac.getTitle())) {
       return stac.getTitle();
@@ -280,46 +297,55 @@ class STAC {
   }
 
   _linkToAbsolute(link) {
-    return Object.assign({}, link, { href: Utils.toAbsolute(link.href, this.getAbsoluteUrl()) });
+    return Object.assign({}, link, {
+      href: Utils.toAbsolute(link.href, this.getAbsoluteUrl()),
+    });
   }
 
   getIcons() {
-    return this.getLinksWithRels(['icon'])
-      .filter(img => Utils.canBrowserDisplayImage(img))
-      .map(img => this._linkToAbsolute(img));
+    return this.getLinksWithRels(["icon"])
+      .filter((img) => Utils.canBrowserDisplayImage(img))
+      .map((img) => this._linkToAbsolute(img));
   }
 
   /**
    * Get the thumbnails from the assets and links in a STAC entity.
-   * 
+   *
    * @param {boolean} browserOnly - Return only images that can be shown in a browser natively (PNG/JPG/GIF/WEBP).
    * @param {?string} prefer - If not `null` (default), prefers a role over the other. Either `thumbnail` or `overview`.
-   * @returns 
+   * @returns
    */
-  getThumbnails(browserOnly = false, prefer = null) { // prefer can be either 
-    let thumbnails = this.getAssetsWithRoles(['thumbnail', 'overview']);
+  getThumbnails(browserOnly = false, prefer = null) {
+    // prefer can be either
+    let thumbnails = this.getAssetsWithRoles(["thumbnail", "overview"]);
     // Get from links only if no assets are available as they should usually be the same as in assets
     if (thumbnails.length === 0) {
-      thumbnails = this.getLinksWithRels(['preview']);
+      thumbnails = this.getLinksWithRels(["preview"]);
     }
     // Some old catalogs use just a asset key
-    if (thumbnails.length === 0 && Utils.isObject(this.assets) && Utils.isObject(this.assets.thumbnail)) {
+    if (
+      thumbnails.length === 0 &&
+      Utils.isObject(this.assets) &&
+      Utils.isObject(this.assets.thumbnail)
+    ) {
       thumbnails = [this.assets.thumbnail];
     }
     if (browserOnly) {
       // Remove all images that can't be displayed in a browser
-      thumbnails = thumbnails.filter(img => Utils.canBrowserDisplayImage(img));
+      thumbnails = thumbnails.filter((img) =>
+        Utils.canBrowserDisplayImage(img)
+      );
     }
     if (prefer && thumbnails.length > 1) {
       // Prefer one role over the other.
       // The two step approach with two filters ensures the same sort bevahiour across all browsers:
       // see https://github.com/radiantearth/stac-browser/issues/370
-      let filter = img => img.roles.includes(prefer);
+      let filter = (img) => img.roles.includes(prefer);
       thumbnails = thumbnails
         .filter(filter)
-        .concat(thumbnails.filter(img => !filter(img)));
+        .concat(thumbnails.filter((img) => !filter(img)));
     }
-    return thumbnails.map(img => this._linkToAbsolute(img));
+    return thumbnails.map((img) => this._linkToAbsolute(img));
   }
 
   equals(other) {
@@ -334,7 +360,6 @@ class STAC {
     }
     return false;
   }
-
 }
 
 export default STAC;

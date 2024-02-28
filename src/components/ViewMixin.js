@@ -1,24 +1,21 @@
-import ViewButtons from './ViewButtons.vue';
+import ViewButtons from "./ViewButtons.vue";
 
 export default {
   components: {
-    ViewButtons
+    ViewButtons,
   },
   computed: {
     cardsComponent() {
-      return (this.view === 'list') ? 'div' : 'b-card-group';
+      return this.view === "list" ? "div" : "b-card-group";
     },
     cardsComponentProps() {
-      if (this.view === 'list') {
+      if (this.view === "list") {
         return {
-          class: [
-            'card-list'
-          ]
+          class: ["card-list"],
         };
-      }
-      else {
+      } else {
         return {
-          columns: true
+          columns: true,
         };
       }
     },
@@ -27,8 +24,8 @@ export default {
         return this.$store.state.cardViewMode;
       },
       set(cardViewMode) {
-        this.$store.commit('config', { cardViewMode });
-      }
-    }
-  }
+        this.$store.commit("config", { cardViewMode });
+      },
+    },
+  },
 };

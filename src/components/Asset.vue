@@ -7,94 +7,154 @@
           <b-icon-chevron-right v-else />
         </span>
         <span class="title">{{ asset.title || id }}</span>
-        <div class="badges ml-1">
-          <b-badge v-if="shown" variant="success" class="shown" :title="$t('assets.currentlyShown')">
-            <b-icon-check /> {{ $t('assets.shown') }}
+        <div class="badges ml-1" v-if="Array.isArray(asset.roles)">
+          <b-badge
+            v-if="shown"
+            variant="success"
+            class="shown"
+            :title="$t('assets.currentlyShown')"
+          >
+            <b-icon-check /> {{ $t("assets.shown") }}
           </b-badge>
-          <b-badge v-if="asset.deprecated" variant="warning" class="deprecated">{{ $t('deprecated') }}</b-badge>
-          <template v-if="Array.isArray(asset.roles)">
-            <b-badge v-for="role in asset.roles" :key="role" :variant="role === 'data' ? 'primary' : 'secondary'" class="role">{{ displayRole(role) }}</b-badge>
-          </template>
-          <b-badge v-if="shortFileFormat" variant="dark" class="format" :title="fileFormat"><span v-html="shortFileFormat" /></b-badge>
+          <b-badge
+            v-if="asset.deprecated"
+            variant="warning"
+            class="deprecated"
+            >{{ $t("deprecated") }}</b-badge
+          >
+          <b-badge
+            v-for="role in asset.roles"
+            :key="role"
+            :variant="role === 'data' ? 'primary' : 'secondary'"
+            class="role"
+            >{{ displayRole(role) }}</b-badge
+          >
+          <b-badge
+            v-if="shortFileFormat"
+            variant="dark"
+            class="format"
+            :title="fileFormat"
+            ><span v-html="shortFileFormat"
+          /></b-badge>
         </div>
       </b-button>
     </b-card-header>
-    <b-collapse :id="uid" v-model="expanded" :accordion="type" role="tabpanel" @input="collapseToggled">
-      <template v-if="hasAlternatives">
-        <b-tabs card>
-          <b-tab :title="asset['alternate:name'] || $t('assets.alternate.main')" active>
-            <AssetAlternative :asset="asset" :context="context" :shown="shown" hasAlternatives @show="show" />
-          </b-tab>
-          <b-tab v-for="(altAsset, key) in alternatives" :title="altAsset['alternate:name'] || key" :key="key">
-            <AssetAlternative :asset="altAsset" :context="context" :shown="shown" hasAlternatives :key="key" @show="show" />
-          </b-tab>
-        </b-tabs>
-      </template>
-      <AssetAlternative v-else :asset="asset" :context="context" :shown="shown" @show="show" />
+    <b-collapse
+      :id="uid"
+      v-model="expanded"
+      :accordion="type"
+      role="tabpanel"
+      @input="collapseToggled"
+    >
+      <b-card-body>
+        <b-card-title><span v-html="fileFormat" /></b-card-title>
+        <HrefActions isAsset :data="asset" :shown="shown" @show="show" />
+        <b-card-text class="mt-4" v-if="asset.description">
+          <Description :description="asset.description" compact />
+        </b-card-text>
+        <Metadata
+          class="mt-4"
+          :data="asset"
+          :context="context"
+          :ignoreFields="ignore"
+          title=""
+          type="Asset"
+        />
+      </b-card-body>
     </b-collapse>
   </b-card>
 </template>
 
 <script>
-import { BCollapse, BIconCheck, BIconChevronRight, BIconChevronDown, BTabs, BTab } from 'bootstrap-vue';
-import { formatMediaType } from '@radiantearth/stac-fields/formatters';
-import { mapState } from 'vuex';
-import AssetAlternative from './AssetAlternative.vue';
-import StacFieldsMixin from './StacFieldsMixin';
-import Utils from '../utils';
+import {
+  BCollapse,
+  BIconCheck,
+  BIconChevronRight,
+  BIconChevronDown,
+} from "bootstrap-vue";
+import { formatMediaType } from "@radiantearth/stac-fields/formatters";
+import { mapState } from "vuex";
+import Description from "./Description.vue";
+import HrefActions from "./HrefActions.vue";
+import StacFieldsMixin from "./StacFieldsMixin";
 
 export default {
-  name: 'Asset',
+  name: "Asset",
   components: {
-    AssetAlternative,
     BCollapse,
     BIconCheck,
     BIconChevronDown,
     BIconChevronRight,
-    BTabs,
-    BTab
+    Description,
+    HrefActions,
+    Metadata: () => import("./Metadata.vue"),
   },
-  mixins: [
-    StacFieldsMixin({ formatMediaType })
-  ],
+  mixins: [StacFieldsMixin({ formatMediaType })],
   props: {
     asset: {
       type: Object,
-      required: true
+      required: true,
     },
     id: {
       type: String,
-      required: true
+      required: true,
     },
     context: {
       type: Object,
-      default: null
+      default: null,
     },
     definition: {
       type: Boolean,
-      default: false
+      default: false,
     },
     expand: {
       type: Boolean,
-      default: null
+      default: null,
     },
     shown: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
-      expanded: false
+      expanded: false,
+      ignore: [
+        // Asset fields that are handled directly
+        "href",
+        "title",
+        "description",
+        "type",
+        "roles",
+        // Don't show these complex lists of coordinates: https://github.com/radiantearth/stac-browser/issues/141
+        "proj:bbox",
+        "proj:geometry",
+        // Don't show very specific options that can't be rendered nicely
+        "table:storage_options",
+        "xarray:open_kwargs",
+        "xarray:storage_options",
+      ],
     };
   },
   computed: {
-    ...mapState(['stateQueryParameters']),
+    ...mapState([
+      "buildTileUrlTemplate",
+      "useTileLayerAsFallback",
+      "url",
+      "stateQueryParameters",
+    ]),
+    tileRendererType() {
+      if (this.buildTileUrlTemplate && !this.useTileLayerAsFallback) {
+        return "server";
+      } else {
+        return "client";
+      }
+    },
     type() {
-      return this.definition ? 'itemdef' : 'asset';
+      return this.definition ? "itemdef" : "asset";
     },
     uid() {
-      return `${this.type}-${this.id.toLowerCase().replace(/[^\w]/g, '-')}`;
+      return `${this.type}-${this.id}`;
     },
     fileFormat() {
       if (typeof this.asset.type === "string" && this.asset.type.length > 0) {
@@ -104,28 +164,10 @@ export default {
     },
     shortFileFormat() {
       if (typeof this.asset.type === "string" && this.asset.type.length > 0) {
-        return this.formatMediaType(this.asset.type, null, {shorten: true});
+        return this.formatMediaType(this.asset.type, null, { shorten: true });
       }
       return null;
     },
-    alternatives() {
-      if (!Utils.isObject(this.asset.alternate)) {
-        return {};
-      }
-
-      const asset = Object.assign({}, this.asset);
-      delete asset.alternate;
-
-      const merged = {};
-      for (const key in this.asset.alternate) {
-        merged[key] = Object.assign({}, asset, this.asset.alternate[key]);
-      }
-      
-      return merged;
-    },
-    hasAlternatives() {
-      return Utils.size(this.alternatives) > 0;
-    }
   },
   created() {
     if (this.stateQueryParameters[this.type].indexOf(this.uid) > -1) {
@@ -133,10 +175,9 @@ export default {
       return;
     }
 
-    if (typeof this.expand === 'boolean') {
+    if (typeof this.expand === "boolean") {
       this.expanded = this.expand;
-    }
-    else {
+    } else {
       this.expanded = false;
     }
   },
@@ -148,14 +189,14 @@ export default {
       }
       return role;
     },
-    collapseToggled(isVisible) {
-      let event = isVisible ? 'openCollapsible' : 'closeCollapsible';
-      this.$store.commit(event, {type: this.type, uid: this.uid});
-    },
     show() {
-      this.$emit('show', ...arguments);
-    }
-  }
+      this.$emit("show", ...arguments);
+    },
+    collapseToggled(isVisible) {
+      let event = isVisible ? "openCollapsible" : "closeCollapsible";
+      this.$store.commit(event, { type: this.type, uid: this.uid });
+    },
+  },
 };
 </script>
 

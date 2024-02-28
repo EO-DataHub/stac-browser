@@ -122,8 +122,9 @@ export default {
               core.push(summaryGroup);
             }
           });
-          const collator = new Intl.Collator(this.uiLanguage);
-          return core.sort((a, b) => collator.compare(a.label, b.label));
+          return core.sort((a, b) =>
+            a.label.localeCompare(b.label, this.uiLanguage)
+          );
         }
         case "FeatureCollection":
           return {};

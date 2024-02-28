@@ -5,7 +5,14 @@
         {{ queryable.title }}
       </span>
 
-      <b-dropdown size="sm" class="op" variant="dark" split :text="operator.label" @click="iterateOps">
+      <b-dropdown
+        size="sm"
+        class="op"
+        variant="dark"
+        split
+        :text="operator.label"
+        @click="iterateOps"
+      >
         <b-dropdown-item-button
           v-for="op in operators"
           :key="op.SYMBOL"
@@ -16,10 +23,13 @@
           <b-badge variant="dark" class="ml-2">{{ op.label }}</b-badge>
         </b-dropdown-item-button>
       </b-dropdown>
-      
+
       <date-picker
         v-if="queryable.isTemporal"
+        type="date"
         class="value"
+        :lang="datepickerLang"
+        :format="datepickerFormat"
         :value="value.value"
         @input="updateValue($event)"
         v-bind="validation"
@@ -36,6 +46,8 @@
       />
       <b-form-input
         v-else-if="queryable.isText || queryable.isNumeric"
+        :number="queryable.isNumeric"
+        :type="queryable.isNumeric ? 'number' : 'text'"
         size="sm"
         class="value"
         :value="value.value"
@@ -53,40 +65,62 @@
         {{ $t(`checkbox.${value.value}`) }}
       </b-form-checkbox>
 
-      <b-button class="delete" size="sm" variant="danger" @click="$emit('remove-queryable')">
+      <b-button
+        class="delete"
+        size="sm"
+        variant="danger"
+        @click="$emit('remove-queryable')"
+      >
         <b-icon-x-circle-fill aria-hidden="true" />
       </b-button>
     </b-row>
 
-    <b-row v-if="queryable.description || operator.description" class="queryable-help text-muted small">
-      <Description v-if="operator.description" :description="operator.description" inline />
-      <Description v-if="queryable.description" :description="queryable.description" inline />
+    <b-row
+      v-if="queryable.description || operator.description"
+      class="queryable-help text-muted small"
+    >
+      <Description
+        v-if="operator.description"
+        :description="operator.description"
+        inline
+      />
+      <Description
+        v-if="queryable.description"
+        :description="queryable.description"
+        inline
+      />
     </b-row>
   </div>
 </template>
 
 <script>
-import { BBadge, BDropdown, BDropdownItemButton, BFormCheckbox, BFormInput, BFormSelect, BIconXCircleFill } from 'bootstrap-vue';
+import {
+  BBadge,
+  BDropdown,
+  BDropdownItemButton,
+  BFormCheckbox,
+  BFormInput,
+  BFormSelect,
+  BIconXCircleFill,
+} from "bootstrap-vue";
 
-import DatePickerMixin from './DatePickerMixin';
-import Utils from '../utils';
-import CqlValue from '../models/cql2/value';
-    
+import DatePickerMixin from "./DatePickerMixin";
+import Utils from "../utils";
+import CqlValue from "../models/cql2/value";
+
 export default {
-  name: 'QueryableInput',
+  name: "QueryableInput",
   components: {
-    BBadge, 
+    BBadge,
     BDropdown,
     BDropdownItemButton,
     BFormCheckbox,
     BFormInput,
     BFormSelect,
     BIconXCircleFill,
-    Description: () => import('./Description.vue')
+    Description: () => import("./Description.vue"),
   },
-  mixins: [
-    DatePickerMixin
-  ],
+  mixins: [DatePickerMixin],
   props: {
     // eslint-disable-next-line
     value: {
@@ -94,41 +128,46 @@ export default {
     },
     operator: {
       type: Function,
-      required: true
+      required: true,
     },
     queryable: {
       type: Object,
-      required: true
+      required: true,
     },
     cql: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     validation() {
-      if (this.queryable.isTemporal) {
+      if (this.queryable.isText && !this.queryable.isTemporal) {
         return {
-          type: this.queryable.isDateTime ? 'datetime' : 'date',
-          lang: this.datepickerLang,
-          format: this.queryable.isDateTime ? this.dateTimeFormat : this.dateFormat
-        };
-      }
-      else if (this.queryable.isText) {
-        return {
-          type: 'text',
           minlength: this.schema.minLength,
           maxlength: this.schema.maxLenggth,
-          required: this.schema.minLength > 0
+          required: this.schema.minLength > 0,
         };
-      }
-      else if (this.queryable.isNumeric) {
+      } else if (this.queryable.isNumeric) {
+        let step;
+        if (
+          typeof this.schema.minimum === "number" &&
+          typeof this.schema.maximum === "number"
+        ) {
+          let delta = this.schema.maximum - this.schema.minimum;
+          if (delta <= 0.1) {
+            step = 0.01;
+          } else if (delta <= 1) {
+            step = 0.1;
+          } else if (delta <= 100) {
+            step = 1;
+          } else {
+            step = 10;
+          }
+        }
         return {
-          type: 'number',
-          number: true,
           min: this.schema.minimum,
           max: this.schema.maximum,
-          step: this.schema.multipleOf || 'any'
+          step,
         };
       }
       return {};
@@ -141,39 +180,38 @@ export default {
     },
     queryableOptions() {
       if (this.queryable.isSelection) {
-        return this.schema.enum.map(option => ({
+        return this.schema.enum.map((option) => ({
           value: option,
-          text: option
+          text: option,
         }));
       }
       return [];
-    }
+    },
   },
   methods: {
     iterateOps() {
-      let findIndex = this.operators.findIndex(op => op === this.operator);
+      let findIndex = this.operators.findIndex((op) => op === this.operator);
       let nextIndex = ++findIndex % this.operators.length;
       this.updateOperator(this.operators[nextIndex]);
     },
     updateValue(evt) {
-      let val = Utils.isObject(evt) && 'target' in evt ? evt.target.value : evt;
-      if (typeof val === "string" && this.queryable.is('integer')) {
+      let val = Utils.isObject(evt) && "target" in evt ? evt.target.value : evt;
+      if (typeof val === "string" && this.queryable.is("integer")) {
         val = parseInt(val, 10);
-      }
-      else if (typeof val === "string" && this.queryable.is('number')) {
+      } else if (typeof val === "string" && this.queryable.is("number")) {
         val = parseFloat(val);
       }
-      this.$emit('update:value', CqlValue.create(val));
+      this.$emit("update:value", CqlValue.create(val));
     },
     updateOperator(op) {
-      this.$emit('update:operator', op);
-    }
-  }
+      this.$emit("update:operator", op);
+    },
+  },
 };
 </script>
 
 <style lang="scss">
-@import '~bootstrap/scss/mixins';
+@import "~bootstrap/scss/mixins";
 @import "../theme/variables.scss";
 
 .queryable-row {
@@ -186,7 +224,8 @@ export default {
   .delete {
     width: auto;
   }
-  .title, .value {
+  .title,
+  .value {
     flex-grow: 4;
     width: 8rem !important;
   }

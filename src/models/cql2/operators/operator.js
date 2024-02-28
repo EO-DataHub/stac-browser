@@ -1,5 +1,4 @@
 export default class CqlOperator {
-
   constructor(operator, args = []) {
     this.operator = operator;
     this.args = args;
@@ -7,13 +6,13 @@ export default class CqlOperator {
 
   toText() {
     let op = this.operator.toUpperCase();
-    return this.args.map(arg => arg.toText()).join(` ${op} `);
+    return this.args.map((arg) => arg.toText()).join(` ${op} `);
   }
 
   toJSON() {
     return {
       op: this.operator,
-      args: this.args.map(arg => arg.toJSON())
+      args: this.args.map((arg) => arg.toJSON()),
     };
   }
 
@@ -28,5 +27,4 @@ export default class CqlOperator {
   static get longLabel() {
     return this.label;
   }
-
 }

@@ -10,56 +10,72 @@
         <ProviderRoles :roles="provider.roles" />
       </b-button>
     </b-card-header>
-    <b-collapse :id="id" v-model="expanded" accordion="providers" role="tabpanel">
+    <b-collapse
+      :id="id"
+      v-model="expanded"
+      accordion="providers"
+      role="tabpanel"
+    >
       <b-card-body>
         <b-button-group v-if="provider.url || provider.email || provider.mail">
           <b-button :href="provider.url" target="_blank" variant="primary">
-            {{ $t('providers.homepage') }}
+            {{ $t("providers.homepage") }}
           </b-button>
-          <b-button v-if="provider.email || provider.mail" :href="`mailto:${provider.email || provider.mail}`" target="_blank" variant="primary">
-            {{ $t('providers.email') }}
+          <b-button
+            v-if="provider.email || provider.mail"
+            :href="`mailto:${provider.email || provider.mail}`"
+            target="_blank"
+            variant="primary"
+          >
+            {{ $t("providers.email") }}
           </b-button>
         </b-button-group>
         <b-card-text class="mt-4" v-if="provider.description">
           <Description :description="provider.description" compact />
         </b-card-text>
-        <Metadata class="mt-4" :data="provider" :ignoreFields="ignore" :title="false" type="Provider" />
+        <Metadata
+          class="mt-4"
+          :data="provider"
+          :ignoreFields="ignore"
+          :title="false"
+          type="Provider"
+        />
       </b-card-body>
     </b-collapse>
   </b-card>
 </template>
 
 <script>
-import { BCollapse, BIconChevronRight, BIconChevronDown } from 'bootstrap-vue';
-import Description from './Description.vue';
-import ProviderRoles from './ProviderRoles.vue';
+import { BCollapse, BIconChevronRight, BIconChevronDown } from "bootstrap-vue";
+import Description from "./Description.vue";
+import ProviderRoles from "./ProviderRoles.vue";
 
 export default {
-  name: 'Provider',
+  name: "Provider",
   components: {
     BCollapse,
     BIconChevronDown,
     BIconChevronRight,
     Description,
-    Metadata: () => import('./Metadata.vue'),
-    ProviderRoles
+    Metadata: () => import("./Metadata.vue"),
+    ProviderRoles,
   },
   props: {
     provider: {
       type: Object,
-      required: true
+      required: true,
     },
     id: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       expanded: false,
-      ignore: ['url', 'name', 'description', 'roles']
+      ignore: ["url", "name", "description", "roles"],
     };
-  }
+  },
 };
 </script>
 

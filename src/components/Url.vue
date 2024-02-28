@@ -4,7 +4,14 @@
       <b-form-input :id="id" ref="input" :value="url" readonly />
       <b-input-group-append>
         <CopyButton :copyText="url" variant="primary" />
-        <b-button v-if="open" :href="url" target="_blank" variant="primary" :title="$t('open')"><b-icon-arrow-up-right-square /></b-button>
+        <b-button
+          v-if="open"
+          :href="url"
+          target="_blank"
+          variant="primary"
+          :title="$t('open')"
+          ><b-icon-arrow-up-right-square
+        /></b-button>
       </b-input-group-append>
     </b-input-group>
   </b-form-group>
@@ -12,9 +19,12 @@
 
 <script>
 import {
-  BFormInput, BFormGroup,
+  BFormInput,
+  BFormGroup,
   BIconArrowUpRightSquare,
-  BInputGroup, BInputGroupAppend } from 'bootstrap-vue';
+  BInputGroup,
+  BInputGroupAppend,
+} from "bootstrap-vue";
 
 export default {
   name: "Share",
@@ -24,26 +34,26 @@ export default {
     BIconArrowUpRightSquare,
     BInputGroup,
     BInputGroupAppend,
-    CopyButton: () => import('./CopyButton.vue')
+    CopyButton: () => import("./CopyButton.vue"),
   },
   props: {
     id: {
       type: String,
-      required: true
+      required: true,
     },
     url: {
       type: String,
-      required: true
+      required: true,
     },
     label: {
       type: String,
-      required: true
+      required: true,
     },
     open: {
       type: Boolean,
-      default: true
-    }
-  }
+      default: true,
+    },
+  },
 };
 </script>
 

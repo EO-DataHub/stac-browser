@@ -1,9 +1,7 @@
-import { BIconBoxArrowUpRight } from 'bootstrap-vue';
-import URI from 'urijs';
-import i18n from "../i18n";
+import { BIconBoxArrowUpRight } from "bootstrap-vue";
+import URI from "urijs";
 
 export default class ActionPlugin {
-
   constructor(id, component) {
     this.id = id;
     this.component = component;
@@ -13,14 +11,13 @@ export default class ActionPlugin {
     let href;
     if (this.uri instanceof URI) {
       href = this.uri.toString();
-    }
-    else if (typeof this.uri === 'string') {
+    } else if (typeof this.uri === "string") {
       href = this.uri;
     }
     if (href) {
       return {
         href,
-        target: '_blank'
+        target: "_blank",
       };
     }
     return {};
@@ -41,9 +38,4 @@ export default class ActionPlugin {
   get icon() {
     return BIconBoxArrowUpRight;
   }
-
-  get text() {
-    return i18n.t('open');
-  }
-
 }

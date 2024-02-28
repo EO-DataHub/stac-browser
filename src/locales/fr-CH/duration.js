@@ -1,2 +1,2 @@
-import { fr as locale } from '@musement/iso-duration';
+import { fr as locale } from "@musement/iso-duration";
 export default locale;

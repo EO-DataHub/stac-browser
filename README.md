@@ -8,39 +8,35 @@ implemented as a single page application (SPA) for ease of development and to
 limit the overall number of catalog reads necessary when browsing (as catalogs
 may be nested and do not necessarily contain references to their parents).
 
-Version: **3.3.4** (supports all STAC versions between 0.6.0 and 1.1.0)
+Version: **3.1.0** (supports all STAC versions between 0.6.0 and 1.0.0)
 
 This package has also been published to npm as [`@radiantearth/stac-browser`](https://www.npmjs.com/package/@radiantearth/stac-browser).
 
 It's not officially supported, but you may also be able to use it for
 certain _OGC API - Records_ and _OGC API - Features_ compliant servers.
 
-**Please note that STAC Browser is currently with limited funding for both maintenance, bug fixes and improvements. This means issues and PRs may be addressed very slowly.
+**Please note that STAC Browser is currently without funding for both maintenance, bug fixes and improvements. This means issues and PRs may be adressed very slowly.
 If you care about STAC Browser and have some funds to support the future of STAC Browser, please contact matthias@mohr.ws**
 
 **Table of Contents:**
 
-- [STAC Browser](#stac-browser)
-  - [Examples](#examples)
-  - [Get Started](#get-started)
-    - [Private query parameters](#private-query-parameters)
-    - [Migrate from old versions](#migrate-from-old-versions)
-  - [Customize](#customize)
-    - [Options](#options)
-    - [Languages](#languages)
-      - [Custom phrases](#custom-phrases)
-    - [Themes](#themes)
-    - [Basemaps](#basemaps)
-    - [Actions](#actions)
-    - [Additional metadata fields](#additional-metadata-fields)
-      - [Example](#example)
-      - [Translation](#translation)
-    - [Customize through root catalog](#customize-through-root-catalog)
-    - [Custom extensions](#custom-extensions)
-  - [Docker](#docker)
-  - [Contributing](#contributing)
-    - [Adding a new language](#adding-a-new-language)
-  - [Sponsors](#sponsors)
+- [Examples](#examples)
+- [Get Started](#get-started)
+  - [Private query parameters](#private-query-parameters)
+  - [Migrate from old versions](#migrate-from-old-versions)
+- [Customize](#customize)
+  - [Options](#options)
+  - [Languages](#languages)
+  - [Themes](#themes)
+  - [Basemaps](#basemaps)
+  - [Actions](#actions)
+  - [Additional metadata fields](#additional-metadata-fields)
+  - [Customize through root catalog](#customize-through-root-catalog)
+  - [Custom extensions](#custom-extensions)
+- [Docker](#docker)
+- [Contributing](#contributing)
+  - [Adding a new language](#adding-a-new-language)
+- [Sponsors](#sponsors)
 
 ## Examples
 
@@ -77,9 +73,6 @@ npm run build -- --catalogUrl="https://earth-search.aws.element84.com/v1/"
 
 This will only work on the root path of your domain though. If you'd like to publish in a sub-folder,
 you can use the [`pathPrefix`](docs/options.md#pathprefix) option.
-
-> [!NOTE]  
-> If you are using a recent version of node/npm on Windows, you may need to use `npm run build -- -- ...` instead of `npm run build -- ...`, see <https://github.com/npm/cli/issues/7375> for details.
 
 After building, `dist/` will contain all assets necessary
 host the browser. These can be manually copied to your web host of choice.
@@ -123,30 +116,16 @@ You need to change the [`locale`](docs/options.md#locale) and [`supportedLocales
 
 The following languages are currently supported:
 
-- Arabic `ar`
-- German `de` (Germany `de`, Switzerland `de-CH`)
-- Spanish `es`
-- English `en` (International `en`, US `en-US`, UK `en-GB`)
-- French `fr` (Canada `fr-CA`, France `fr`, Switzerland `fr-CH`)
-- Italian `it` (Italy `it`, Switzerland `it-CH`)
-- Romanian `ro`
-- Japanese `ja`
-- Portuguese `pt` (Brazil `pt-BR`, Portugal `pt`)
+- de: German (Germany, Switzerland)
+- es: Spanish
+- en: English
+- fr: French (Canada, France, Switzerland)
+- it: Italian (Italy, Switzerland)
+- ro: Romanian
 
 We manage the translations in Crowdin, please see <https://crowdin.com/project/stac-browser/> for details.
 
-To add your own language, please follow the guide below: [Adding a new language](#adding-a-new-language)
-
-The following contributors kindly provide the translations:
-
-- [@jfbourgon](https://github.com/jfbourgon): `fr`, `fr-CA`
-- [@mneagul](https://github.com/mneagul): `ro`
-- [@m-mohr](https://github.com/m-mohr): `de`, `en`, `en-GB`, `en-US`
-- [@p1d1d1](https://github.com/p1d1d1): `de-CH`, `fr-CH`, `it`, `it-CH`
-- [@psacra](https://github.com/psacra): `pt`
-- [@randa-11295](https://github.com/randa-11295): `ar`
-- [@rnanclares](https://github.com/rnanclares): `es`
-- [@uba](https://github.com/uba): `pt-BR`
+To add your own language, please follow the guide below: [Adding a new langauge](#adding-a-new-language)
 
 #### Custom phrases
 
@@ -258,20 +237,75 @@ You need to provide a field `stac_browser` and then you can set any of the follo
 - `defaultThumbnailSize`
 - `displayGeoTiffByDefault`
 - `showThumbnailsAsAssets`
+- `stacLint` (can only be disabled)
 
 ### Custom extensions
 
 STAC Browser supports some non-standardized extensions to the STAC specification that you can use to improve the user-experience.
 
-1. [Provider Object](https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md#provider-object):
-   Add an `email` (or `mail`) field with an e-mail address and the mail will be shown in the Browser.
-2. [Alternative Assets Object](https://github.com/stac-extensions/alternate-assets?tab=readme-ov-file#alternate-asset-object):
-   Add a `name` field and it will be used as title in the tab header, the same applies for the core Asset Object.
-3. A link with relation type `icon` and a Browser-supported media type in any STAC entity will show an icon in the header and the lists of Catalogs, Collections and Items.
+1. To the [Provider Object](https://github.com/radiantearth/stac-spec/blob/master/collection-spec/collection-spec.md#provider-object) you can add an `email` (or `mail`) field with an e-mail address and the mail will be shown in the Browser, too.
+2. A link with relation type `icon` and a Browser-supported media type in any STAC entity will show an icon in the header and the lists.
 
 ## Docker
 
-You can use the Docker to work with STAC Browser. Please read [Docker documentation](docs/docker.md) for more details.
+### Create a custom image
+
+Building the Dockerfile without changing any build options:
+
+```bash
+docker build -t stac-browser:v1 .
+```
+
+Run the container for a specific URL:
+
+```bash
+docker run -p 8080:8080 -e SB_catalogUrl="https://earth-search.aws.element84.com/v1/" stac-browser:v1
+```
+
+STAC Browser is now available at `http://localhost:8080`
+
+---
+
+You can pass further options to STAC Browser to customize it to your needs.
+
+The build-only options
+[`pathPrefix`](docs/options.md#pathprefix) and [`historyMode`](docs/options.md#historymode)
+can be provided as a
+[build argument](https://docs.docker.com/engine/reference/commandline/build#set-build-time-variables---build-arg)
+when building the Dockerfile.
+
+For example:
+
+```bash
+docker build -t stac-browser:v1 --build-arg pathPrefix="/browser/" --build-arg historyMode=hash .
+```
+
+All other options, except the ones that are explicitly excluded from CLI/ENV usage,
+can be passed as environment variables when running the container.
+For example, to run the container with a pre-defined
+[`catalogUrl`](docs/options.md#catalogurl) and [`catalogTitle`](docs/options.md#catalogtitle):
+
+```bash
+docker run -p 8080:8080 -e SB_catalogUrl="https://earth-search.aws.element84.com/v1/" -e SB_catalogTitle="Earth Search" stac-browser:v1
+```
+
+If you want to pass all the other arguments to `npm run build` directly, you can modify to the Dockerfile as needed.
+
+STAC browser is now available at `http://localhost:8080/browser`
+
+### Use an existing image
+
+Since version 3.1.1, you can add an existing image from [Packages](https://github.com/radiantearth/stac-browser/pkgs/container/stac-browser) to your docker-compose.yml:
+
+```
+services:
+  stac-browser:
+    image: ghcr.io/radiantearth/stac-browser:latest
+    ports:
+      - 8080:8080
+    environment:
+      SB_catalogUrl: "https://localhost:7188"
+```
 
 ## Contributing
 
@@ -308,20 +342,17 @@ You can also use one of the existing languages and provide an alternate version 
 - Translate the `.json` files, most importantly `config.json`, `fields.json` and `texts.json`.
   - Please note that you never need to translate any object keys!
   - If you base your language on another existing language (e.g. create `en-IN` based on `en`) you can delete individual files and import existing files from other languages in `default.js`.
-- Adapt the `datepicker.js`, `duration.js` and `validation.js` files to import the existing definitions from their corresponding external packages, but you could also define the specifics yourself.
+- Adapt the `datepicker.js` and `duration.js` files to import the existing definitions from their corresponding external packages, but you could also define the specifics yourself.
 - Check that your translation works by running the development server (`npm start`) and navigating to the STAC Browser instance in your browser (usually `http://localhost:8080`).
 - Once completed, please open a pull request and we'll get back to you as soon as possible.
 - After merging the PR for the first time, we'll add you to our translation management tool Crowdin: <https://crowdin.com/project/stac-browser/>. Please get in touch to get your invite!
 
 ## Sponsors
 
-The following sponsors have provided a substantial amount of funding for STAC Browser in the past:
+The following sponsors have provided a subststantial amount of funding for STAC Browser in the past:
 
 - [Radiant Earth](https://radiant.earth) (base funding for versions 1, 2 and 3)
-- [swisstopo](https://www.swisstopo.admin.ch/) (maintenance, base funding for version 3 and 4)
 - [National Resources Canada](https://natural-resources.canada.ca/home) (multi-language support, maintenance)
 - [Matthias Mohr - Softwareentwicklung](https://mohr.ws) (maintenance)
-- [Spacebel](https://spacebel.com) (collection search, mapping)
-- [Planet](https://planet.com) (authentication, maintenance)
-- [CloudFerro](https://cloudferro.com) (authentication, alternate asset and storage extension)
-- [Geobeyond](http://www.geobeyond.it/) (mapping)
+- [Spacebel](https://spacebel.com) (collection search)
+- [Planet](https://planet.com) (OpenID Connect authentication, other features, maintenance)

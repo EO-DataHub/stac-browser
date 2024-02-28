@@ -1,8 +1,7 @@
 let config;
-if (typeof CONFIG_PATH === 'undefined') {
-  config = require('../config');
-}
-else {
+if (typeof CONFIG_PATH === "undefined") {
+  config = require("../config");
+} else {
   config = require(CONFIG_PATH);
 }
 

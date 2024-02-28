@@ -10,7 +10,7 @@ import { extension } from "@radiantearth/stac-fields/interface";
 import { formatMediaType } from "@radiantearth/stac-fields/formatters";
 import Utils from "../../utils";
 
-import { Bar, Pie } from 'vue-chartjs';
+import { Bar, Pie } from "vue-chartjs";
 import {
   Chart as ChartJS,
   Colors,
@@ -19,54 +19,62 @@ import {
   BarElement,
   ArcElement,
   CategoryScale,
-  LinearScale
-} from 'chart.js';
+  LinearScale,
+} from "chart.js";
 
-ChartJS.register(Title, Tooltip, Colors, ArcElement, BarElement, CategoryScale, LinearScale);
+ChartJS.register(
+  Title,
+  Tooltip,
+  Colors,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale
+);
 
 export default {
   name: "StatsChart",
   components: {
     Bar,
-    Pie
+    Pie,
   },
   props: {
     data: {
       type: Object,
-      required: true
+      required: true,
     },
     type: {
       type: String,
-      required: true
+      required: true,
     },
     count: {
       type: Number,
-      required: true
+      required: true,
     },
     options: {
       type: Object,
-      default: () => ({})
-    }
+      default: () => ({}),
+    },
   },
   computed: {
     component() {
-      switch(this.type) {
-        case 'versions':
-          return 'Pie';
+      switch (this.type) {
+        case "versions":
+          return "Pie";
         default:
-          return 'Bar';
+          return "Bar";
       }
     },
     title() {
-      switch(this.type) {
-        case 'versions':
-          return this.$t('source.stacVersion');
-        case 'extensions':
-          return this.$t('source.stacExtension');
-        case 'assets':
-          return this.$t('source.fileFormat');
+      switch (this.type) {
+        case "versions":
+          return this.$t("source.stacVersion");
+        case "extensions":
+          return this.$t("source.stacExtension");
+        case "assets":
+          return this.$t("source.fileFormat");
         default:
-          return '';
+          return "";
       }
     },
     allOptions() {
@@ -75,7 +83,7 @@ export default {
         plugins: {
           title: {
             display: true,
-            text: this.title
+            text: this.title,
           },
         },
         scales: {
@@ -83,10 +91,10 @@ export default {
             min: 0,
             max: this.count,
             title: {
-              display: false
-            }
-          }
-        }
+              display: false,
+            },
+          },
+        },
       };
       return Object.assign(options, this.options);
     },
@@ -98,8 +106,8 @@ export default {
         values.push(count);
 
         let label;
-        switch(this.type) {
-          case 'extensions': {
+        switch (this.type) {
+          case "extensions": {
             let ext = this.parseExtension(id);
             label = `${ext.title}`;
             if (ext.version) {
@@ -107,7 +115,7 @@ export default {
             }
             break;
           }
-          case 'assets':
+          case "assets":
             label = formatMediaType(id);
             break;
           default:
@@ -119,30 +127,33 @@ export default {
         labels,
         datasets: [
           {
-            data: values
-          }
-        ]
+            data: values,
+          },
+        ],
       };
-    }
+    },
   },
   methods: {
     parseExtension(uri) {
       let version = null;
       let title = uri;
-      let match = uri.match(/^https?:\/\/stac-extensions\.github\.io\/([^/]+)\/v?([^/]+)(?:\/([^/.]+))?\/schema/);
+      let match = uri.match(
+        /^https?:\/\/stac-extensions\.github\.io\/([^/]+)\/v?([^/]+)(?:\/([^/.]+))?\/schema/
+      );
       if (match) {
         version = match[2];
         title = extension(match[1]);
         if (match[3]) {
-          title += ' - ' + formatKey(match[3]);
+          title += " - " + formatKey(match[3]);
         }
-      }
-      else {
-        title = uri.replace(/^https?:\/\/(www.)?/, '').replace(/\/schema(\.json)?$/, '');
+      } else {
+        title = uri
+          .replace(/^https?:\/\/(www.)?/, "")
+          .replace(/\/schema(\.json)?$/, "");
         title = Utils.shortenTitle(title, 30);
       }
       return { title, version };
-    }
-  }
+    },
+  },
 };
 </script>

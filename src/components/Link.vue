@@ -1,21 +1,41 @@
 <template>
   <li class="link">
-    <StacLink :id="popoverId" :data="link" :fallbackTitle="fallbackTitle" class="pr-1" />
-    <b-popover :target="popoverId" triggers="hover" placement="right" container="#stac-browser" custom-class="link-more">
-      <Description v-if="link.description" :description="link.description" compact />
+    <StacLink
+      :id="popoverId"
+      :data="link"
+      :fallbackTitle="fallbackTitle"
+      class="pr-1"
+    />
+    <b-popover
+      :target="popoverId"
+      triggers="hover"
+      placement="right"
+      container="#stac-browser"
+      custom-class="link-more"
+    >
+      <Description
+        v-if="link.description"
+        :description="link.description"
+        compact
+      />
       <section class="link-actions">
-        <h3 class="first">{{ $t('additionalActions') }}</h3>
+        <h3 class="first">{{ $t("additionalActions") }}</h3>
         <HrefActions vertical :data="link" size="sm" />
       </section>
-      <Metadata :data="link" type="Link" headerTag="h3" :ignoreFields="ignore" />
+      <Metadata
+        :data="link"
+        type="Link"
+        headerTag="h3"
+        :ignoreFields="ignore"
+      />
     </b-popover>
   </li>
 </template>
 
 <script>
-import HrefActions from './HrefActions.vue';
-import StacLink from './StacLink.vue';
-import { BPopover } from 'bootstrap-vue';
+import HrefActions from "./HrefActions.vue";
+import StacLink from "./StacLink.vue";
+import { BPopover } from "bootstrap-vue";
 
 let linkId = 0;
 
@@ -25,36 +45,32 @@ export default {
     BPopover,
     HrefActions,
     StacLink,
-    Description: () => import('./Description.vue'),
-    Metadata: () => import('./Metadata.vue')
+    Description: () => import("./Description.vue"),
+    Metadata: () => import("./Metadata.vue"),
   },
   props: {
     link: {
       type: Object,
-      required: true
+      required: true,
     },
     fallbackTitle: {
       type: Function,
-      required: true
+      required: true,
     },
-    context: {
-      type: Object,
-      default: null
-    }
   },
   data() {
     return {
-      ignore: ['href', 'type', 'rel', 'title', 'description']
+      ignore: ["href", "type", "rel", "title", "description"],
     };
   },
   computed: {
     popoverId() {
       return "popover-link-" + linkId;
-    }
+    },
   },
   beforeCreate() {
     linkId++;
-  }
+  },
 };
 </script>
 
@@ -79,7 +95,7 @@ export default {
       margin-top: 0;
     }
   }
-  
+
   .metadata {
     min-width: 400px;
 

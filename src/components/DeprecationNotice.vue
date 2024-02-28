@@ -4,89 +4,98 @@
     <Description :description="message" inline />
     <ul v-if="latestLink || successorLink || predecessorLink">
       <li v-if="latestLink">
-        {{ $t('deprecation.latestVersion') }}
-        <StacLink :data="latestLink" :fallbackTitle="$t('deprecation.fallbackTitle')" />
+        {{ $t("deprecation.latestVersion") }}
+        <StacLink
+          :data="latestLink"
+          :fallbackTitle="$t('deprecation.fallbackTitle')"
+        />
       </li>
       <li v-if="successorLink">
-        {{ $t('deprecation.successorVersion') }}
-        <StacLink :data="successorLink" :fallbackTitle="$t('deprecation.fallbackTitle')" />
+        {{ $t("deprecation.successorVersion") }}
+        <StacLink
+          :data="successorLink"
+          :fallbackTitle="$t('deprecation.fallbackTitle')"
+        />
       </li>
       <li v-if="predecessorLink">
-        {{ $t('deprecation.predecessorVersion') }}
-        <StacLink :data="predecessorLink" :fallbackTitle="$t('deprecation.fallbackTitle')" />
+        {{ $t("deprecation.predecessorVersion") }}
+        <StacLink
+          :data="predecessorLink"
+          :fallbackTitle="$t('deprecation.fallbackTitle')"
+        />
       </li>
     </ul>
   </b-alert>
 </template>
 
 <script>
-import Description from './Description.vue';
+import Description from "./Description.vue";
 
 export default {
-  name: 'DeprecationNotice',
+  name: "DeprecationNotice",
   components: {
-    StacLink: () => import('./StacLink.vue'),
-    Description
+    StacLink: () => import("./StacLink.vue"),
+    Description,
   },
   props: {
     data: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   computed: {
     message() {
-      let vars = {type: this.type};
+      let vars = { type: this.type };
       if (this.isDeprecated) {
-        return this.$t('deprecation.warning', vars);
-
-      }
-      else {
-        return this.$t('deprecation.otherVersionsNotice', vars);
+        return this.$t("deprecation.warning", vars);
+      } else {
+        return this.$t("deprecation.otherVersionsNotice", vars);
       }
     },
     latestLink() {
-      return this.data.getStacLinkWithRel('latest-version');
+      return this.data.getStacLinkWithRel("latest-version");
     },
     successorLink() {
-      return this.data.getStacLinkWithRel('successor-version');
+      return this.data.getStacLinkWithRel("successor-version");
     },
     predecessorLink() {
       // Show prev. link only if not deprecated
-      return !this.isDeprecated && this.data.getStacLinkWithRel('predecessor-version');
+      return (
+        !this.isDeprecated &&
+        this.data.getStacLinkWithRel("predecessor-version")
+      );
     },
     variant() {
-      return this.isDeprecated ? 'warning' : 'info';
+      return this.isDeprecated ? "warning" : "info";
     },
     isDeprecated() {
-      return Boolean(this.data.isItem() ? this.data.properties.deprecated : this.data.deprecated);
+      return Boolean(
+        this.data.isItem()
+          ? this.data.properties.deprecated
+          : this.data.deprecated
+      );
     },
     title() {
       if (this.isDeprecated) {
-        return this.$t('deprecated');
-      }
-      else if (this.latestLink || this.successorLink) {
-        return this.$t('deprecation.outdatedTitle');
-      }
-      else {
-        return this.$t('deprecation.otherVersionsTitle');
+        return this.$t("deprecated");
+      } else if (this.latestLink || this.successorLink) {
+        return this.$t("deprecation.outdatedTitle");
+      } else {
+        return this.$t("deprecation.otherVersionsTitle");
       }
     },
     type() {
       if (this.data.isItem()) {
-        return this.$tc('stacItem');
-      }
-      else if (this.data.isCollection()) {
+        return this.$tc("stacItem");
+      } else if (this.data.isCollection()) {
         return this.$tc(`stacCollection`);
-      }
-      else if (this.data.isCatalog()) {
+      } else if (this.data.isCatalog()) {
         return this.$tc(`stacCatalog`);
+      } else {
+        return "";
       }
-      else {
-        return '';
-      }
-    }
-  }
+    },
+  },
 };
 </script>
 

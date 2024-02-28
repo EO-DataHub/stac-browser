@@ -1,6 +1,6 @@
-const Fields = require('@radiantearth/stac-fields/fields-normalized.json');
+const Fields = require("@radiantearth/stac-fields/fields-normalized.json");
 const HardCodedFields = require("./fields_locales.json");
-const fs = require('fs');
+const fs = require("fs");
 
 const translatable = ["label", "explain", "unit"];
 const iterable = ["items", "properties"];
@@ -10,13 +10,23 @@ function ignore(text, path, otherPath) {
   if (path.endsWith(".unit")) {
     return true;
   }
-  if (path.includes(".id.") || path.includes(".name.") || path.includes(".title.") || path.includes(".description.")) {
+  if (
+    path.includes(".id.") ||
+    path.includes(".name.") ||
+    path.includes(".title.") ||
+    path.includes(".description.")
+  ) {
     return true;
   }
   if (path.includes(".href") || path.includes(".roles.")) {
     return true;
   }
-  if (path.includes(".average.") || path.includes(".minimum.") || path.includes(".maximum.") || path.includes(".stddev.")) {
+  if (
+    path.includes(".average.") ||
+    path.includes(".minimum.") ||
+    path.includes(".maximum.") ||
+    path.includes(".stddev.")
+  ) {
     return true;
   }
   if (path.includes("cube:") && otherPath.includes("cube:")) {
@@ -39,32 +49,42 @@ function addText(locales, text, path) {
 }
 
 function findTexts(locales, fields, path) {
-  for(let name in fields) {
+  for (let name in fields) {
     let field = fields[name];
     if (field.alias) {
       continue;
     }
 
-    translatable.forEach(key => field[key] && addText(locales, field[key], `${path}.${name}.${key}`));
-    iterable.forEach(key => field[key] && findTexts(locales, field[key], `${path}.${name}.${key}`));
+    translatable.forEach(
+      (key) =>
+        field[key] && addText(locales, field[key], `${path}.${name}.${key}`)
+    );
+    iterable.forEach(
+      (key) =>
+        field[key] && findTexts(locales, field[key], `${path}.${name}.${key}`)
+    );
     if (field.mapping) {
-      Object.entries(field.mapping).forEach(([key, text]) => addText(locales, text, `${path}.${name}.mapping.${key}`));
+      Object.entries(field.mapping).forEach(([key, text]) =>
+        addText(locales, text, `${path}.${name}.mapping.${key}`)
+      );
     }
   }
 }
 
 function writeToFile(file, locales) {
   const data = {};
-  Object.keys(locales).sort().forEach(key => data[key] = key);
+  Object.keys(locales)
+    .sort()
+    .forEach((key) => (data[key] = key));
   const json = JSON.stringify(data, null, 2);
   fs.writeFileSync(file, json);
 }
 
 function generateLocales() {
   const locales = {};
-  HardCodedFields.forEach(text => addText(locales, text, "hardcoded"));
+  HardCodedFields.forEach((text) => addText(locales, text, "hardcoded"));
   const types = ["assets", "extensions", "links", "metadata"];
-  types.forEach(type => findTexts(locales, Fields[type], type));
+  types.forEach((type) => findTexts(locales, Fields[type], type));
   writeToFile(dest_file, locales);
 }
 

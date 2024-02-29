@@ -44,7 +44,6 @@ jobs:
           npm install crypto-browserify
           npm install stream-browserify
           npm install browserify-zlib
-          export APP_URL=https://stac.eodhp.eco-ke-staging.com
           npm run build
 
       - name: Setup AWS CLI

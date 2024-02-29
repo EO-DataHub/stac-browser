@@ -30,7 +30,7 @@ const mergedConfig = Object.assign(configFromFile, argv);
 const vueConfig = {
   lintOnSave: process.env.NODE_ENV !== "production",
   productionSourceMap: !mergedConfig.noSourceMaps,
-  publicPath: process.env.APP_URL,
+  publicPath: "/",
   chainWebpack: (webpackConfig) => {
     webpackConfig.plugin("define").tap((args) => {
       args[0].STAC_BROWSER_VERSION = JSON.stringify(pkgFile.version);

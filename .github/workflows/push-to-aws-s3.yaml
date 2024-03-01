@@ -44,6 +44,7 @@ jobs:
           npm install crypto-browserify
           npm install stream-browserify
           npm install browserify-zlib
+          export APP_PUBLIC_PATH=/$IMAGE_TAG
           npm run build
 
       - name: Setup AWS CLI

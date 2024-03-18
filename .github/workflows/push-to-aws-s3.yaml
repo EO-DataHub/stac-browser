@@ -44,7 +44,7 @@ jobs:
           npm install crypto-browserify
           npm install stream-browserify
           npm install browserify-zlib
-          export APP_PUBLIC_PATH=/$IMAGE_TAG
+          export APP_PUBLIC_PATH=/stac/$IMAGE_TAG
           npm run build
 
       - name: Setup AWS CLI
@@ -57,4 +57,4 @@ jobs:
       - name: Sync files to S3 bucket
         run: |
           echo ls
-          aws s3 cp dist s3://resource-catalog-browser/$IMAGE_TAG --recursive
+          aws s3 cp dist s3://resource-catalog-browser/stac/$IMAGE_TAG --recursive

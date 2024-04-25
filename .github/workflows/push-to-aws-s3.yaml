@@ -26,7 +26,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-container-registry
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Get image tag
@@ -44,7 +44,7 @@ jobs:
           npm install crypto-browserify
           npm install stream-browserify
           npm install browserify-zlib
-          export APP_PUBLIC_PATH=/static-apps/catalog-browser/$IMAGE_TAG
+          export APP_PUBLIC_PATH=/static-apps/resource-catalogue/$IMAGE_TAG
           npm run build
 
       - name: Setup AWS CLI
@@ -57,4 +57,4 @@ jobs:
       - name: Sync files to S3 bucket
         run: |
           echo ls
-          aws s3 cp dist s3://eodhp-dev-static-web-artefacts/static-apps/catalog-browser/$IMAGE_TAG --recursive
+          aws s3 cp dist s3://eodhp-dev-static-web-artefacts/static-apps/resource-catalogue/$IMAGE_TAG --recursive

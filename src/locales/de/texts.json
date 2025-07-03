@@ -8,9 +8,8 @@
     "title": "Anonymisiert"
   },
   "assets": {
-    "copyGdalVfsUrl": {
-      "generic": "Kopiere GDAL VFS Adresse",
-      "withSource": "Kopiere GDAL VFS Adresse für {source}"
+    "alternate": {
+      "main": "Bevorzugt"
     },
     "copyUrl": {
       "generic": "Kopiere Adresse",
@@ -32,12 +31,28 @@
   },
   "authentication": {
     "button": {
-      "authenticate": "Anmelden",
-      "authenticated": "Angemeldet",
+      "login": "Anmelden",
+      "logout": "Abmelden",
       "title": "Anmeldedaten bereitstellen oder aktualisieren"
     },
+    "chooseMethod": "Wähle Anmeldemethode",
     "description": "Die angefragte Seite erfordert eine Anmeldung. Bitte die Anmeldedaten unten in das Textfeld eingeben.",
-    "title": "Anmelden"
+    "loggedOut": "Sie wurden erfolgreich abgemeldet. Sie können das Fenster nun schließen.",
+    "password": "Passwort",
+    "required": "Anmeldung erforderlich",
+    "schemeTypes": {
+      "http": "HTTP {scheme}",
+      "s3": "S3",
+      "signedUrl": "Signierte URL",
+      "oauth2": "OAuth 2",
+      "apiKey": "API-Schlüssel",
+      "openIdConnect": "OpenID Connect"
+    },
+    "title": "Anmelden",
+    "unauthorized": "Sie haben keine Berechtigung um diese Daten abzurufen. Bitte melden Sie sich an.",
+    "unsupported": "Nicht unterstützt",
+    "unsupportedLong": "Die Anmeldemethode {method} wird von STAC Browser leider nicht unterstützt.",
+    "user": "Benutzer"
   },
   "browse": "Erkunden",
   "cancel": "Abbrechen",
@@ -47,6 +62,7 @@
   },
   "catalogs": {
     "filterByTitle": "Kataloge anhand des Titels filtern",
+    "filterByTitleAndMore": "Kataloge anhand von Titel, Beschreibung oder Schlüsselwörtern filtern",
     "loadMore": "Lade mehr...",
     "noMatches": "Keiner der Kataloge entspricht den Suchkriterien."
   },
@@ -77,7 +93,7 @@
     "forbidden": "Die für diese Anfrage angegebenen Anmeldedaten sind ungültig, bspw. ein abgelaufener oder ungültiger API-Schlüssel. Bitte geben Sie andere Anmeldedaten an und versuchen Sie es erneut.",
     "invalidJsonObject": "Die Antwort des Dienstanbieters ist kein gültiges JSON-Objeckt.",
     "invalidStacCollections": "Die Antwort des Dienstanbieters ist keine gültige Liste mit Katalogen.",
-    "invalidStacItems": "Die Antwort des Dienstanbieters ist keine fültige Liste mit Elementen.",
+    "invalidStacItems": "Die Antwort des Dienstanbieters ist keine gültige Liste mit Elementen.",
     "labels": {
       "cause": "Ursache:",
       "code": "Fehlercode:",
@@ -98,6 +114,10 @@
   "fullscreen": {
     "exit": "Verlasse den Vollbild-Modus",
     "show": "Zeige im Vollbild-Modus"
+  },
+  "goBack": {
+    "description": "Gehe zurück zu: {type}",
+    "label": "Zurück"
   },
   "goToCollection": {
     "description": "Gehe zum dazugehörigen Katalog",
@@ -146,6 +166,7 @@
   },
   "loading": "Lade...",
   "map": "Karte",
+  "messageForSchemaError": "{message}, für Schema {schemaPath}",
   "metadata": {
     "general": "Allgemeines",
     "title": "Metadaten"
@@ -153,7 +174,8 @@
   "multiselect": {
     "andMore": "und {count} weitere",
     "deselectLabel": "Enter zum Entfernen",
-    "placeholder": "Option wählen",
+    "keywordsPlaceholder": "Schlüsselwörter auswählen",
+    "placeholder": "Option auswählen",
     "selectLabel": "Enter zum Selektieren",
     "selectedLabel": "Selektiert"
   },
@@ -171,13 +193,16 @@
     "ftp": "FTP",
     "gcs": "Google Cloud",
     "oss": "Alibaba Cloud",
-    "s3": "Amazon S3"
+    "s3": {
+      "amazonaws.com": "Amazon S3",
+      "default": "S3"
+    }
   },
   "providers": {
     "email": "E-Mail senden",
     "homepage": "Gehe zur Internetseite",
     "role": {
-      "host": "Datenverbreiter",
+      "host": "Anbieter",
       "licensor": "Lizenzgeber",
       "processor": "Verarbeiter",
       "producer": "Erzeuger"
@@ -208,7 +233,7 @@
     "greaterThanEqual": "größer als oder entspricht",
     "itemIds": "Element-Identifikationsnummern",
     "itemsPerPage": "Elemente pro Seite",
-    "itemsPerPageDescription": "Anzahl der Elemente die pro Seite angefragft wird, maximal {maxItems} Elemente.",
+    "itemsPerPageDescription": "Anzahl der Elemente die pro Seite angefragt wird, maximal {maxItems} Elemente.",
     "lessThan": "kleiner als",
     "lessThanEqual": "kleiner als oder entspricht",
     "likeOperatorDescription": "Platzhalterzeichen können verwendet werden. `_` entspricht einem einzelnen Zeichen, `%` entspricht einer beliebigen Anzahl an Zeichen. Um nach einem Platzhalterzeichen selber zu suchen, müssen ein `\\` vor das Zeichen gesetzt werden.",
@@ -219,6 +244,7 @@
     "matches": "enthält etwa",
     "metaDescription": "Durchsuche die angebotenen Daten von {title}.",
     "modifyCriteria": "Bitte die Suchkriterien ändern.",
+    "noFurtherItemsFound": "Keine weiteren Elemente verfügbar.",
     "noItemsFound": "Keine Elemente gefunden für die angegebenen Filter.",
     "noOptions": "Noch nichts eingegeben",
     "notEqualTo": "entspricht nicht",
@@ -259,8 +285,10 @@
   "source": {
     "conformanceClasses": "Konformitätsklasse",
     "detailsAboutSource": "Details über die STAC-Datenquelle",
+    "extension": "Erweiterung",
     "fileFormat": "Dateiformat",
     "id": "Identifikationsnummer",
+    "invalid": "Nicht konform",
     "label": "Datenquelle",
     "language": {
       "label": "Sprache: {currentLanguage}",
@@ -270,21 +298,50 @@
     },
     "locatedAt": "Die Datei mit den STAC-Metadaten befindet sich unter:",
     "share": {
+      "bsky": "Bluesky",
       "email": "E-Mail",
       "label": "Teilen",
+      "mastodon": "Mastodon.social",
       "message": "{title} ist verfügbar unter {url}",
       "sharePageWithOthers": "Teile die Adresse dieser Seite:",
       "title": "Teilen",
-      "twitter": "Twitter",
+      "x": "X (Twitter)",
       "withOthers": "Teile diese Seite mit anderen"
     },
     "stacExtension": "STAC-Erweiterung",
     "stacVersion": "STAC-Version",
     "statistics": "Statistiken",
     "title": "Datenquelle",
-    "valid": "Valide",
+    "valid": "Konform",
     "validating": "Validiere...",
-    "validationNA": "nicht verfügbar"
+    "validationNA": "nicht verfügbar",
+    "validationParams": {
+      "additionalProperty": "zusätzliches Attribut",
+      "allowedValue": "erlaubter Wert",
+      "allowedValues": "erlaubte Werte",
+      "comparison": "Vergleich",
+      "depsCount": "Anzahl",
+      "exclusive": "exklusive der Grenze",
+      "failingKeyword": "nicht konforme Schemata",
+      "format": "Format",
+      "i": "erstes Element",
+      "j": "zweites Element",
+      "limit": "Grenze",
+      "maxContains": "enthält höchstens",
+      "minContains": "enthält mindestens",
+      "missingProperty": "fehlendes Attribut",
+      "multipleOf": "Vielfaches von",
+      "passingSchemas": "konforme Schemata",
+      "pattern": "Muster",
+      "property": "Attribut",
+      "propertyName": "Attributname",
+      "type": "Datentyp"
+    },
+    "validationReport": {
+      "disclaimer": "Der Konformitätsbericht wird auf der Grundlage von Schemata erstellt, die oft nicht vollständig sind. Sie decken daher möglicherweise nicht alle Aspekte der STAC-Spezifikation und ihrer Erweiterungen ab. Der Konformitätsbericht ist keine Garantie dafür, dass die STAC-Daten vollständig mit der Spezifikation und ihren Erweiterungen konform ist.",
+      "result": "Ergebnis",
+      "title": "Konformitätsbericht"
+    }
   },
   "stacAssets": "Datei | Dateien",
   "stacCatalog": "Katalog | Kataloge",
